@@ -5,6 +5,7 @@
 }
 body {
     font: 13px Helvetica, Arial;
+    display: flex;
 }
 form {
     background: #000;
@@ -13,6 +14,7 @@ form {
     bottom: 0;
     width: 100%;
     display: flex;
+    flex: 1;
 }
 form input {
     border: 0;
@@ -24,6 +26,7 @@ form button {
     padding: 10px;
 }
 #messages {
+    flex: 1;
     list-style-type: none;
     margin: 0;
     padding: 0;
