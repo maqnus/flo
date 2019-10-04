@@ -6,29 +6,51 @@
     <link rel="stylesheet" href="style.css">
   </head>
   <body>
-    <ul id="messages"></ul>
-    <form action="" id="form">
-      <input id="m" autocomplete="off" />
-      <button>Send</button>
-    </form>
+    <div>
+        Select your favorite color: <input id="favcolor" type="color" name="favcolor" value="#ff0000">
+    </div>
+    <div class="chat-wrapper">
+        <ul id="messages"></ul>
+        <form action="" id="form">
+          <input id="m" autocomplete="off" />
+          <button>Send</button>
+        </form>
+    </div>
     <script src="/socket.io/socket.io.js"></script>
     <script>
         const socket = io();
         const form = document.getElementById('form');
         const messageInput = document.getElementById('m');
         const messages = document.getElementById('messages');
+        const favcolorInput = document.getElementById('favcolor');
         const postMessage = event => {
             event.preventDefault();
-            socket.emit('chat message', messageInput.value);
+            socket.emit('chat message', {
+              text: messageInput.value,
+              color: favcolorInput.value
+            });
             messageInput.value = "";
             return false;
         };
+        const setFavcolor = event => {
+          event.preventDefault();
+          console.log(event);
+          socket
+          return false;
+        }
         form.addEventListener('submit', postMessage);
-        socket.on('chat message', msg => {
-            const message = document.createElement('li');
-            const newContent = document.createTextNode(msg);
-            message.appendChild(newContent);
-            messages.appendChild(message);
+        socket.on('chat message', props => {
+          const {
+            text
+          } = props;
+            console.log('chat message', props);
+            const li = document.createElement('li');
+            const p = document.createElement('p');
+            p.setAttribute("style", "background-color:" + props.color);
+            const message = document.createTextNode(text);
+            p.appendChild(message);
+            li.appendChild(p);
+            messages.appendChild(li);
         })
     </script>
   </body>

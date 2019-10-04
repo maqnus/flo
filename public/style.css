@@ -4,7 +4,9 @@
     box-sizing: border-box;
 }
 body {
-    font: 13px Helvetica, Arial;
+    font: 20px Helvetica, Arial;
+}
+.chat-wrapper {
     display: flex;
 }
 form {
@@ -16,7 +18,7 @@ form {
     display: flex;
     flex: 1;
 }
-form input {
+form #m {
     border: 0;
     flex: 1;
 }
@@ -24,6 +26,7 @@ form button {
     background: rgb(130, 224, 255);
     border: none;
     padding: 10px;
+    font-size: 1rem;
 }
 #messages {
     flex: 1;
