@@ -4,23 +4,45 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Flo</title>
+    <title>Login / Flo</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <h1>Login</h1>
-    <form>
+    <form id="loginform">
         <label>
             Email
-            <input type="email" name="emailaddress" id="emailaddress" />
+            <input type="email" name="email" id="email" />
         </label>
         <label>
             Password
-            <input type="password" name="userpwd" id="userpwd">
+            <input type="password" name="password" id="usrpwd">
         </label>
-        <a href="/mypage">Login</a>
+        <button type="submit" href="/mypage">Login</button>
     </form>
     <a href="/reset-password">Forgot password?</a>
     <a href="/register">New user</a>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();
+        const form = document.getElementById('loginform');
+        const email = document.getElementById('email');
+        const password = document.getElementById('usrpwd');
+        const login = event => {
+            event.preventDefault();
+            socket.emit('login', {
+              email: email.value,
+              password: password.value
+            });
+            console.log(email.value, password.value);
+            email.value = "";
+            password.value = "";
+            return false;
+        };
+        socket.on('redirect', function(destination) {
+            window.location.href = destination;
+        });
+        form.addEventListener('submit', login);
+    </script>
 </body>
 </html>

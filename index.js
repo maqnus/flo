@@ -15,6 +15,10 @@ app.get('/reset-password', function(req, res){
   res.sendFile(__dirname + '/public/reset-password.html');
 });
 
+app.get('/logout', function(req, res){
+  res.sendFile(__dirname + '/public/logout.html');
+});
+
 app.get('/', function(req, res){
   res.sendFile(__dirname + '/public/login.html');
 });
@@ -29,8 +33,16 @@ app.get('/chat', function(req, res){
 
 io.on('connection', function(socket) {
     console.log('a user connected');
-      socket.on('disconnect', function(){
+    socket.on('disconnect', function(){
       console.log('user disconnected');
+    });
+    socket.on('login', function(props){
+      console.log('login: ' + props);
+      io.emit('redirect', '/mypage');
+    });
+    socket.on('logout', function(props){
+      console.log('logout');
+      io.emit('redirect', '/');
     });
     socket.on('chat message', function(props){
       io.emit('chat message', props);

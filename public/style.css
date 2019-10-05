@@ -6,6 +6,9 @@
 body {
     font: 20px Helvetica, Arial;
 }
+img {
+    max-width: 100%;
+}
 .chat-wrapper {
     display: flex;
 }
