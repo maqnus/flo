@@ -8,33 +8,49 @@ app.set('view engine', 'pug');
 app.use(express.static('public')); 
 
 app.get('/register', function(req, res){
-  res.sendFile(__dirname + '/public/register.html');
+  res.render(__dirname + '/src/views/register', {
+    pageTitle: 'Register'
+  });
 });
 
 app.get('/reset-password', function(req, res){
-  res.render(__dirname + '/src/views/reset-password');
+  res.render(__dirname + '/src/views/reset-password', {
+    pageTitle: 'Reset password',
+    heading: 'Forgot your password?'
+  });
 });
 
 app.get('/logout', function(req, res){
-  res.render(__dirname + '/src/views/logout');
+  res.render(__dirname + '/src/views/logout', {
+    pageTitle: 'Logout'
+  });
 });
 
 app.get('/', function(req, res){
-  res.render(__dirname + '/src/views/login');
-});
-
-app.get('/pug', function(req, res){
-  res.render(__dirname + '/src/views/index', {
-    name: 'Magnus'
+  res.render(__dirname + '/src/views/login', {
+    layoutType: 'login',
+    pageTitle: 'Login'
   });
 });
 
 app.get('/mypage', function(req, res){
-  res.sendFile(__dirname + '/public/mypage.html');
+  res.render(__dirname + '/src/views/mypage', {
+    pageTitle: '[username]',
+    heading: '[username]'
+  });
 });
 
 app.get('/chat', function(req, res){
-  res.sendFile(__dirname + '/public/chat.html');
+  res.render(__dirname + '/src/views/chat', {
+    pageTitle: 'Chat'
+  });
+});
+
+app.get('*', function(req, res){
+  res.render(__dirname + '/src/views/404', {
+    pageTitle: '404 Page not found',
+    name: 'Magnus'
+  });
 });
 
 io.on('connection', function(socket) {

@@ -1,15 +1,9 @@
-doctype html
-html(lang="en")
-head
-    meta(charset="UTF-8")
-    meta(name="viewport" content="width=device-width, initial-scale=1.0")
-    meta(http-equiv="X-UA-Compatible" content="ie=edge")
-    title Logout / Flo
-    link(rel="stylesheet" href="style.css")
-
-body
-    h1 Logout
-    p Logging you out...
+extends shared/layout/main.pug
+block content
+    header(class="header")
+        h1 Logout
+    main(class="main")
+        p Logging you out...
     script(src="./js/main.js")
     script(src="/socket.io/socket.io.js")
     script.

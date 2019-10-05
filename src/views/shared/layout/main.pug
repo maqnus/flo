@@ -1,0 +1,9 @@
+extends root.pug
+block headScripts
+    script(src="https://unpkg.com/lodash@4.16.6")
+block body
+    block splash
+    div(class=`main-wrapper`)
+        block content
+block footScripts
+    script(src="./js/main.js")

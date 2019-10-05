@@ -1,23 +1,23 @@
-doctype html
-html(lang="en")
-head
-    meta(charset="UTF-8")
-    meta(name="viewport" content="width=device-width, initial-scale=1.0")
-    meta(http-equiv="X-UA-Compatible" content="ie=edge")
-    title Login / Flo
-    link(rel="stylesheet" href="style.css")
-    script(src="https://unpkg.com/lodash@4.16.6")
+extends shared/layout/main.pug
 
-body
-    h1 Login
-    form(id="loginform")
-        label Email
+block splash
+    div(id="splash")
+        div
+            img(src="/assets/logo.png" alt="Profile image")
+block content
+    header(class="header")
+        h1 Login
+    main(class="main")
+        form(class="narrow-wrapper" id="loginform")
+            label(for="email") Email
             input(type="email" name="email" id="email")
-        label Password
+            label(for="password") Password
             input(type="password" name="password" id="usrpwd")
-        button(type="submit" href="/mypage") Login
-    a(href="/reset-password") Forgot password?
-    a(href="/register") New user
+            button(type="submit" href="/mypage") Login
+        div(class="narrow-wrapper")
+            a(class="forgot-password" href="/reset-password") Forgot password?
+            a(class="new-user" href="/register") New user
+block footScripts
     script(src="./js/main.js")
     script(src="/socket.io/socket.io.js")
     script.
@@ -40,3 +40,8 @@ body
             window.location.href = destination;
         });
         form.addEventListener('submit', login);
+
+        const splash = document.getElementById("splash");
+        splash.addEventListener("animationend", function() {
+            splash.parentNode.removeChild(splash);
+        }, false);
