@@ -1,0 +1,42 @@
+doctype html
+html(lang="en")
+head
+    meta(charset="UTF-8")
+    meta(name="viewport" content="width=device-width, initial-scale=1.0")
+    meta(http-equiv="X-UA-Compatible" content="ie=edge")
+    title Login / Flo
+    link(rel="stylesheet" href="style.css")
+    script(src="https://unpkg.com/lodash@4.16.6")
+
+body
+    h1 Login
+    form(id="loginform")
+        label Email
+            input(type="email" name="email" id="email")
+        label Password
+            input(type="password" name="password" id="usrpwd")
+        button(type="submit" href="/mypage") Login
+    a(href="/reset-password") Forgot password?
+    a(href="/register") New user
+    script(src="./js/main.js")
+    script(src="/socket.io/socket.io.js")
+    script.
+        const socket = io();
+        const form = document.getElementById('loginform');
+        const email = document.getElementById('email');
+        const password = document.getElementById('usrpwd');
+        const login = event => {
+            event.preventDefault();
+            socket.emit('login', {
+              email: email.value,
+              password: password.value
+            });
+            console.log(email.value, password.value);
+            email.value = "";
+            password.value = "";
+            return false;
+        };
+        socket.on('redirect', function(destination) {
+            window.location.href = destination;
+        });
+        form.addEventListener('submit', login);

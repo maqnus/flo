@@ -12,15 +12,15 @@ app.get('/register', function(req, res){
 });
 
 app.get('/reset-password', function(req, res){
-  res.sendFile(__dirname + '/public/reset-password.html');
+  res.render(__dirname + '/src/views/reset-password');
 });
 
 app.get('/logout', function(req, res){
-  res.sendFile(__dirname + '/public/logout.html');
+  res.render(__dirname + '/src/views/logout');
 });
 
 app.get('/', function(req, res){
-  res.sendFile(__dirname + '/public/login.html');
+  res.render(__dirname + '/src/views/login');
 });
 
 app.get('/pug', function(req, res){
