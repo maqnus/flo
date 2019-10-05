@@ -1,10 +1,10 @@
-var express = require('express'); 
-var app = express(); 
-var http = require('http').createServer(app);
-var io = require('socket.io')(http);
+const express = require('express'); 
+const app = express(); 
+const http = require('http').createServer(app);
+const io = require('socket.io')(http);
 
 app.set('port', (process.env.PORT || 5000));
-
+app.set('view engine', 'pug');
 app.use(express.static('public')); 
 
 app.get('/register', function(req, res){
@@ -21,6 +21,12 @@ app.get('/logout', function(req, res){
 
 app.get('/', function(req, res){
   res.sendFile(__dirname + '/public/login.html');
+});
+
+app.get('/pug', function(req, res){
+  res.render(__dirname + '/src/views/index', {
+    name: 'Magnus'
+  });
 });
 
 app.get('/mypage', function(req, res){
