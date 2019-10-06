@@ -9,23 +9,52 @@ block content
                 input(type="text" name="name" id="name")
             label
                 span(class="visuallyhidden") Profile picture
-                img(id="imgOut" src="https://www.what-dog.net/Images/faces2/scroll0015.jpg")
-                input(type="file" accept="image/*" id="imgInp")
-        a(href="/mypage") Done
+                - var profile = { id: 'imgOut', imageUrl: '/assets/ralph-wave.gif', alt: 'Profile image' }
+                include shared/profile-image.pug
+                input(type="file" accept="image/*" id="imgInp" class="visually-hidden")
+        button(type="submit") Done
 block footerScripts
     script(src="./js/main.js")
+    script(src="/socket.io/socket.io.js")
     script.
+        const socket = io();
+        const form = document.getElementById('loginform');
+        const name = document.getElementById('name');
         const fileIn = document.getElementById('imgInp'),
             fileOut = document.getElementById('imgOut');
 
         const readUrl = event => {
-        if(event.files && event.files[0]) {
-            let reader = new FileReader();
-                reader.onload = event => fileOut.src = event.target.result;
-                reader.readAsDataURL(event.files[0])
-        }
+            if(event.files && event.files[0]) {
+                let reader = new FileReader();
+                    reader.onload = event => fileOut.src = event.target.result;
+                    reader.readAsDataURL(event.files[0])
+            }
         }
 
         fileIn.onchange = function() {
         readUrl(this);
         };
+
+        const setAccountData = event => {
+            event.preventDefault();
+            console.log('trying to chat');
+            socket.emit('set account data', {
+              text: messageInput.value,
+              color: favcolorInput.value
+            });
+            messageInput.value = "";
+            return false;
+        };
+        const setup = event => {
+            event.preventDefault();
+            console.log('trying to chat');
+            socket.emit('setup', {
+              name: name.value,
+              profileImg: document.getElementById('imgOut').value
+            });
+            return false;
+        };
+        form.addEventListener('submit', setup);
+        socket.on('redirect', function(destination) {
+            window.location.href = destination;
+        });

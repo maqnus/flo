@@ -8,7 +8,28 @@ block content
             label Email
                 input(type="email" name="email" id="email")
             label Password
-                input(type="password" name="password" id="usrpwd")
-            a(href="/account-setup") Create
+                input(type="password" name="password" id="password")
+            button(type="submit") Create
 block footerScripts
     script(src="./js/main.js")
+    script(src="/socket.io/socket.io.js")
+    script.
+        const socket = io();
+        const form = document.getElementById('loginform');
+        const email = document.getElementById('email');
+        const password = document.getElementById('password');
+        const register = event => {
+            event.preventDefault();
+            console.log('trying to chat');
+            socket.emit('register', {
+              email: email.value,
+              password: password.value
+            });
+            email.value = "";
+            password.value = "";
+            return false;
+        };
+        form.addEventListener('submit', register);
+        socket.on('redirect', function(destination) {
+            window.location.href = destination;
+        });

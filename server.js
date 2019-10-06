@@ -46,6 +46,20 @@ app.get('/mypage', function(req, res){
   });
 });
 
+app.get('/department', function(req, res){
+  res.render(__dirname + '/src/views/department', {
+    pageTitle: '[department]',
+    heading: '[department]'
+  });
+});
+
+app.get('/employee', function(req, res){
+  res.render(__dirname + '/src/views/employee', {
+    pageTitle: '[employee]',
+    heading: '[employee]'
+  });
+});
+
 app.get('/chat', function(req, res){
   res.render(__dirname + '/src/views/chat', {
     pageTitle: 'Chat'
@@ -60,6 +74,7 @@ app.get('*', function(req, res){
 });
 
 io.on('connection', function(socket) {
+    const user = {};
     console.log('a user connected');
     socket.on('disconnect', function(){
       console.log('user disconnected');
@@ -76,6 +91,20 @@ io.on('connection', function(socket) {
       io.emit('chat message', props);
       console.log('message: ' + props);
     });
+    socket.on('set account data', function(props){
+      console.log('Set account data', props);
+      console.log('Registered info', user);
+    })
+    socket.on('register', function(props){
+      console.log('register', props);
+      user["email"] = props.email;
+      user["password"] = props.password;
+      io.emit('redirect', '/account-setup');
+    })
+    socket.on('setup', function(props){
+      console.log('setup', props);
+      io.emit('redirect', '/mypage')
+    })
 })
 
 http.listen(app.get('port'), function(){

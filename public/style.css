@@ -217,6 +217,13 @@ form button {
     line-height: 2.5;
     margin-top: 8rem;
 }
+.main-nav .container .nav-list a {
+    color: black;
+    text-decoration: none;
+}
+.main-nav .container .nav-list a:hover {
+    text-decoration: underline;
+}
 
 .main-nav.open .container {
     transform: translate3d(0%, 0px, 0px);
@@ -268,6 +275,28 @@ form button {
 
 .status-title {
     font-size: 0.875rem;
+}
+
+.department-employees {
+    list-style: none;
+    width: 80%;
+    line-height: 2.5;
+    margin-top: 8rem;
+}
+.department-employees a {
+    color: black;
+}
+.department-employees .name {
+    display: block;
+    border-bottom: solid 1px;
+}
+.department-employees .department {
+    display: block;
+    font-size: .88rem;
+    margin-bottom: 2rem;
+}
+.goto-employee-arrow {
+    float: right;
 }
 
 .visually-hidden { 
