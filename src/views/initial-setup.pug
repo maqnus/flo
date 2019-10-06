@@ -1,0 +1,31 @@
+extends shared/layout/main.pug
+block content
+    header(class="header")
+        div
+            h1 Account setup
+    div(class="main")
+        form(id="loginform")
+            label Name
+                input(type="text" name="name" id="name")
+            label
+                span(class="visuallyhidden") Profile picture
+                img(id="imgOut" src="https://www.what-dog.net/Images/faces2/scroll0015.jpg")
+                input(type="file" accept="image/*" id="imgInp")
+        a(href="/mypage") Done
+block footerScripts
+    script(src="./js/main.js")
+    script.
+        const fileIn = document.getElementById('imgInp'),
+            fileOut = document.getElementById('imgOut');
+
+        const readUrl = event => {
+        if(event.files && event.files[0]) {
+            let reader = new FileReader();
+                reader.onload = event => fileOut.src = event.target.result;
+                reader.readAsDataURL(event.files[0])
+        }
+        }
+
+        fileIn.onchange = function() {
+        readUrl(this);
+        };

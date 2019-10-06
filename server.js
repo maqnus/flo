@@ -13,6 +13,12 @@ app.get('/register', function(req, res){
   });
 });
 
+app.get('/account-setup', function(req, res){
+  res.render(__dirname + '/src/views/initial-setup', {
+    pageTitle: 'Account setup'
+  });
+});
+
 app.get('/reset-password', function(req, res){
   res.render(__dirname + '/src/views/reset-password', {
     pageTitle: 'Reset password',
