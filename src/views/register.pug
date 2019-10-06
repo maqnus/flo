@@ -3,12 +3,12 @@ block content
     header(class="header")
         div
             h1 Create a new user
-    main(class="main")
+    div(class="main")
         form(id="loginform")
             label Email
                 input(type="email" name="email" id="email")
             label Password
                 input(type="password" name="password" id="usrpwd")
             a(href="/mypage") Create
-block footScripts
+block footerScripts
     script(src="./js/main.js")

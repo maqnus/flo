@@ -1,20 +1,17 @@
 extends shared/layout/main.pug
 block content
-    header(class="header")
-        div
-            img(src="/assets/ralph-wave.gif" alt="Profile image")
-            h1 Chat
-        a(href="/timer") Timer
-        include shared/navigation.pug
-    main(class="main")
+    - var title = 'Chat'
+    include shared/header.pug
+    div(class="main")
         div Select your favorite color:
             input(id="favcolor" type="color" name="favcolor" value="#ff0000")
         div(class="chat-wrapper")
             ul(id="messages")
             form(action="" id="form")
-            input(id="m" autocomplete="off")
-            button Send
+                input(id="m" autocomplete="off")
+                button Send
 block footerScripts
+    script(src="./js/main.js")
     script(src="/socket.io/socket.io.js")
     script.
         const socket = io();
@@ -24,6 +21,7 @@ block footerScripts
         const favcolorInput = document.getElementById('favcolor');
         const postMessage = event => {
             event.preventDefault();
+            console.log('trying to chat');
             socket.emit('chat message', {
               text: messageInput.value,
               color: favcolorInput.value
@@ -51,4 +49,4 @@ block footerScripts
             li.appendChild(p);
             messages.appendChild(li);
         })
-    script(src="./js/main.js")
+    

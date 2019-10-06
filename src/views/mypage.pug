@@ -1,15 +1,11 @@
-extends shared/layout/root.pug
-block body
-    header(class="header")
-        div
-            img(src="/assets/ralph-wave.gif" alt="Profile image")
-            h1 [username]
-        a(href="/timer") Timer
-        include shared/navigation.pug
-    main(class="main")
-        h2 No requests from your colleagues
-    a(href="/chat") Chat
-    a(href="/logout") Logout
+extends shared/layout/main.pug
 
-block footScripts    
+block content
+    - var name = 'Signe Anderson' //'[username]'
+    - var title = 'Front-end developer'
+    include shared/header.pug
+    div(class="main")
+        h2 No requests from your colleagues
+
+block footerScripts    
     script(src="./js/main.js")

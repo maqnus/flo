@@ -62,7 +62,7 @@ img {
     max-width: 100%;
 }
 .chat-wrapper {
-    display: flex;
+    width: 100%;
 }
 form {
     padding: 3px;
@@ -77,10 +77,15 @@ form button {
     font-size: 1rem;
 }
 #messages {
-    flex: 1;
+    height: 50vw;
+    width: 100%;
+    background-color: white;
+    position: relative;
+    display: block;
     list-style-type: none;
     margin: 0;
     padding: 0;
+    overflow-y: scroll !important;
 }
 #messages li {
     padding: 5px 10px;
@@ -125,6 +130,49 @@ form button {
     margin-top: 4em;
 }
 
+.countdown .countdown-toggler {
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    z-index: 2;
+    border: none;
+    width: 3rem;
+    height: 3rem;
+    overflow: hidden;
+    color: transparent;
+    background-color: transparent;
+}
+
+.countdown .container {
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 100%;
+    width: 100vw;
+    overflow-y: scroll !important;
+    background-color: #E9DCD3;
+    transition: all 0.5s ease 0s;
+    transform: translate3d(-100%, 0px, 0px);
+}
+
+.countdown.open .container {
+    transform: translate3d(0%, 0px, 0px);
+}
+
+.countdown.open .container .content {
+    width: 80%;
+    text-align: right;
+    line-height: 2.5;
+    margin-top: 8rem;
+}
+
+.countdown.open ~ .page-container {
+    transform: translate3d(100%, 0px, 0px);
+}
+
 .main-nav .nav-toggler {
     position: absolute;
     top: 1rem;
@@ -135,20 +183,67 @@ form button {
     height: 3rem;
     overflow: hidden;
     color: transparent;
+    background-color: transparent;
+    cursor: pointer;
 }
 
 .main-nav .container {
-    display: none;
-}
-
-.main-nav.open .container {
     display: block;
     position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
     height: 100%;
     width: 100vw;
     overflow-y: scroll !important;
-    top: 0;
     background-color: #E9DCD3;
+    transition: all 0.5s ease 0s;
+    transform: translate3d(100%, 0px, 0px);
+}
+
+.main-nav .container .nav-list {
+    width: 80%;
+    text-align: right;
+    line-height: 2.5;
+    margin-top: 8rem;
+}
+
+.main-nav.open .container {
+    transform: translate3d(0%, 0px, 0px);
+}
+
+
+.page-container {
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 100%;
+    width: 100vw;
+    overflow-y: scroll !important;
+    transition: all 0.5s ease 0s;
+    transform: translate3d(0%, 0px, 0px);
+}
+
+.main-nav.open ~ .page-container {
+    transform: translate3d(-100%, 0px, 0px);
+}
+
+.profile-image-wrapper {
+    width: 8rem;
+    height: 8rem;
+    display: block;
+    margin: auto;
+    border-radius: 50%;
+    overflow: hidden;
+}
+.profile-image-wrapper img {
+    width: inherit;
+    height: inherit;
+    object-fit: cover;
 }
 
 .visually-hidden { 

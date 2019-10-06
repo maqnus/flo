@@ -7,7 +7,7 @@ block splash
 block content
     header(class="header")
         h1 Login
-    main(class="main")
+    div(class="main")
         form(class="narrow-wrapper" id="loginform")
             label(for="email") Email
             input(type="email" name="email" id="email")
@@ -17,7 +17,7 @@ block content
         div(class="narrow-wrapper")
             a(class="forgot-password" href="/reset-password") Forgot password?
             a(class="new-user" href="/register") New user
-block footScripts
+block footerScripts
     script(src="./js/main.js")
     script(src="/socket.io/socket.io.js")
     script.
