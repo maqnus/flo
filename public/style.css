@@ -7,7 +7,7 @@
 .page {
     background-color: #FBF5E5;
     font: 20px Helvetica, Arial;
-    overflow-x: hidden;
+    overflow: hidden;
 }
 .page.login {
     background-color: #E6B5B3;
