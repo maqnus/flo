@@ -1,20 +1,16 @@
 //- main layout
 doctype html
-html(lang="en")
 head
     meta(charset="UTF-8")
     meta(name="viewport" content="width=device-width, initial-scale=1.0")
     meta(http-equiv="X-UA-Compatible" content="ie=edge")
     title #{pageTitle} / Flo
-    link(rel="stylesheet" href="style.css")
+    link(rel="stylesheet" type="text/css" href="style.css" media="all")
+    link(rel="manifest" href="manifest.json")
     block headScripts
 
-if layoutType
-    body(class=`page ${layoutType}`)
-        block body
-        block footerScripts
-else
-    body(class=`page`)
-        block body
-        block footerScripts
+body(class=`page${layoutType ? ' ' +layoutType : ''}`)
+    block body
+    block footerScripts
+    include ../add-service-worker.pug
     
