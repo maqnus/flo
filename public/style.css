@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css?family=Coming+Soon&display=swap');
+
 * {
     margin: 0;
     padding: 0;
@@ -16,7 +18,8 @@ textarea {
     margin: 0;
     padding: 0;
     background-color: #FBF5E5;
-    font: 20px Helvetica, Arial;
+    font-family: "Times New Roman", Times, serif;
+    /* font-family: 'Coming Soon', cursive; */
 }
 .page.login {
     background-color: #E6B5B3;
@@ -140,6 +143,11 @@ form button {
     margin-top: 4em;
 }
 
+.countdown {
+    position: fixed;
+    z-index: 1;
+}
+
 .countdown .countdown-toggler {
     z-index: 1;
     position: absolute;
@@ -152,7 +160,31 @@ form button {
     color: transparent;
     background-color: transparent;
 }
+.countdown .countdown-toggler .open {
+    display: block;
+}
+.countdown.open .countdown-toggler .open {
+    display: none;
+}
+.countdown .countdown-toggler .closed {
+    display: none;
+}
+.countdown.open .countdown-toggler .closed {
+    display: block;
+}
 
+.countdown .amination-background {
+    display: block;
+    position: fixed;
+    background-color: #DA6343;
+    top: 2.2rem;
+    left: 2.2rem;
+    border: none;
+    width: 0rem;
+    height: 0rem;
+    border-radius: 50%;
+    transition: all 0.5s ease 0s;
+}
 .countdown .container {
     z-index: 2;
     display: block;
@@ -163,13 +195,27 @@ form button {
     bottom: 0;
     height: 100%;
     width: 100vw;
+    display: none;
+    /* border-radius: 50%; */
     overflow-y: scroll !important;
-    background-color: #E9DCD3;
+    /* background-color: #DA6343; */
+    background-color: transparent;
     transition: all 0.5s ease 0s;
-    transform: translate3d(-100%, 0px, 0px);
+    /* transform: translate3d(0%, 0px, 0px); */
+}
+
+.countdown.open .amination-background {
+    width: 300vh;
+    height: 300vh;
+    top: -100vh;
+    left: -100vh;
 }
 
 .countdown.open .container {
+    /* height: 100%;
+    width: 100vw; */
+    /* border-radius: 0%; */
+    display: block;
     transform: translate3d(0%, 0px, 0px);
 }
 .countdown.open .countdown-toggler {
@@ -184,7 +230,7 @@ form button {
 }
 
 .countdown.open ~ .page-container {
-    transform: translate3d(100%, 0px, 0px);
+    /* transform: translate3d(100%, 0px, 0px); */
 }
 
 .main-nav .nav-toggler {
@@ -212,7 +258,7 @@ form button {
     height: 100%;
     width: 100vw;
     overflow-y: scroll !important;
-    background-color: #E9DCD3;
+    background-color: rgba(233, 220, 211, .7);
     transition: all 0.5s ease 0s;
     transform: translate3d(100%, 0px, 0px);
 }
@@ -238,6 +284,19 @@ form button {
     z-index: 2;
 }
 
+.main-nav .nav-toggler .open {
+    display: block;
+}
+.main-nav.open .nav-toggler .open {
+    display: none;
+}
+.main-nav .nav-toggler .closed {
+    display: none;
+}
+.main-nav.open .nav-toggler .closed {
+    display: block;
+}
+
 .page-container {
     display: block;
     position: absolute;
@@ -254,7 +313,10 @@ form button {
 }
 
 .main-nav.open ~ .page-container {
-    transform: translate3d(-100%, 0px, 0px);
+    /* Add the blur effect */
+    filter: blur(8px);
+    -webkit-filter: blur(8px);
+    /* transform: translate3d(-100%, 0px, 0px); */
 }
 
 .profile-image-wrapper {
