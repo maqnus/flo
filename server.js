@@ -35,7 +35,7 @@ app.get('/logout', function(req, res){
 app.get('/', function(req, res){
   res.render(__dirname + '/src/views/login', {
     layoutType: 'login',
-    pageTitle: 'Login'
+    pageTitle: 'Login',
   });
 });
 
