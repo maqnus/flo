@@ -1,10 +1,10 @@
 @import url('https://fonts.googleapis.com/css?family=Coming+Soon&display=swap');
 
-@import 'css/general.css';
-@import 'css/chat.css';
-@import 'css/login.css';
-@import 'css/countdown.css';
-@import 'css/navigation.css';
-@import 'css/profile.css';
-@import 'css/department.css';
-@import 'css/utils.css';
+@import '/css/general.css';
+@import '/css/chat.css';
+@import '/css/login.css';
+@import '/css/countdown.css';
+@import '/css/navigation.css';
+@import '/css/profile.css';
+@import '/css/department.css';
+@import '/css/utils.css';
