@@ -1,0 +1,22 @@
+.department-employees {
+    list-style: none;
+    width: 80%;
+    line-height: 2.5;
+    margin-top: 8rem;
+}
+.department-employees a {
+    color: black;
+}
+.department-employees .name {
+    display: block;
+    border-bottom: solid 1px;
+}
+.department-employees .department {
+    display: block;
+    font-size: .88rem;
+    margin-bottom: 2rem;
+}
+
+.goto-employee-arrow {
+    float: right;
+}

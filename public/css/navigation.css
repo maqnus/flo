@@ -1,0 +1,70 @@
+.main-nav .nav-toggler {
+    z-index: 1;
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    border: none;
+    width: 3rem;
+    height: 3rem;
+    overflow: hidden;
+    color: transparent;
+    background-color: transparent;
+    cursor: pointer;
+}
+
+.main-nav .container {
+    z-index: 2;
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 100%;
+    width: 100vw;
+    overflow-y: scroll !important;
+    background-color: rgba(233, 220, 211, .7);
+    transition: all 0.5s ease 0s;
+    transform: translate3d(100%, 0px, 0px);
+}
+
+.main-nav .container .nav-list {
+    width: 80%;
+    text-align: right;
+    line-height: 2.5;
+    margin-top: 8rem;
+}
+.main-nav .container .nav-list a {
+    color: black;
+    text-decoration: none;
+}
+.main-nav .container .nav-list a:hover {
+    text-decoration: underline;
+}
+
+.main-nav.open .container {
+    transform: translate3d(0%, 0px, 0px);
+}
+.main-nav.open .nav-toggler {
+    z-index: 2;
+}
+
+.main-nav .nav-toggler .open {
+    display: block;
+}
+.main-nav.open .nav-toggler .open {
+    display: none;
+}
+.main-nav .nav-toggler .closed {
+    display: none;
+}
+.main-nav.open .nav-toggler .closed {
+    display: block;
+}
+
+.main-nav.open ~ .page-container {
+    /* Add the blur effect */
+    filter: blur(8px);
+    -webkit-filter: blur(8px);
+    /* transform: translate3d(-100%, 0px, 0px); */
+}

@@ -1,0 +1,110 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+input {
+  font-size: 16px;
+}
+
+.page {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    background-color: #FBF5E5;
+    font-family: "Times New Roman", Times, serif;
+    /* font-family: 'Coming Soon', cursive; */
+}
+.page.login {
+    background-color: #E6B5B3;
+}
+
+@keyframes fadeOut {
+    0% { opacity: 1; }
+    80% { opacity: 1; }
+    100% { opacity: 0; }
+}
+#splash {
+    z-index: 2;
+    position: absolute;
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #E6B5B3;
+    opacity: 0;
+    animation-duration: 3s;
+    animation-name: fadeOut;
+}
+
+
+
+.main-wrapper {
+    display: flex;
+    flex-direction: column;
+    max-width: 500px;
+    min-height: 100vh;
+    margin: auto;
+}
+
+.main-wrapper.open-menu {
+    overflow: hidden;
+    position: fixed;
+    top: 0;
+}
+
+.main-wrapper .header {
+    text-align: center;
+    margin-top: 3em;
+}
+
+.main-wrapper .main {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+}
+
+img {
+    max-width: 100%;
+}
+.chat-wrapper {
+    width: 100%;
+}
+form {
+    padding: 3px;
+    bottom: 0;
+}
+form #m {
+    border: 0;
+}
+form button {
+    border: none;
+    padding: 10px;
+    font-size: 1rem;
+}
+
+
+.narrow-wrapper {
+    width: 100%;
+    max-width: 20rem;
+}
+.page-container {
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 100%;
+    width: 100vw;
+    overflow-x: hidden;
+    overflow-y: scroll !important;
+    transition: all 0.5s ease 0s;
+    transform: translate3d(0%, 0px, 0px);
+}

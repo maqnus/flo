@@ -1,0 +1,25 @@
+.profile-image-wrapper {
+    width: 8rem;
+    height: 8rem;
+    display: block;
+    margin: auto;
+    border-radius: 50%;
+    overflow: hidden;
+}
+.profile-image-wrapper img {
+    width: inherit;
+    height: inherit;
+    object-fit: cover;
+}
+
+.profile__name {
+    font-size: 1.25rem;
+    margin-top: 1.188rem;
+}
+.profile__title {
+    font-size: 0.875rem
+}
+
+.status-title {
+    font-size: 0.875rem;
+}
