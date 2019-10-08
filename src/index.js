@@ -16,7 +16,9 @@ const toggleOpenCountdown = () => {
   }
   countdownWrapper.classList.toggle("open");
 }
-countdownToggleButton.addEventListener('click', toggleOpenCountdown);
+if (countdownToggleButton) {
+  countdownToggleButton.addEventListener('click', toggleOpenCountdown);
+}
 
 const navigationWrapper = document.querySelector('.main-nav');
 const navigationToggleButton = document.querySelector('.nav-toggler');
@@ -26,4 +28,6 @@ const toggleOpenNavigation = () => {
   }
   navigationWrapper.classList.toggle("open");
 }
+if (navigationToggleButton) {
   navigationToggleButton.addEventListener('click', toggleOpenNavigation);
+}
