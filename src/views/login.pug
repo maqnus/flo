@@ -31,9 +31,8 @@ block footerScripts
               email: email.value,
               password: password.value
             });
-            console.log(email.value, password.value);
+            //- console.log(email.value, password.value);
             email.value = "";
-            password.value = "";
             return false;
         };
         socket.on('redirect', function(destination) {

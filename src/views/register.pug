@@ -20,7 +20,6 @@ block footerScripts
         const password = document.getElementById('password');
         const register = event => {
             event.preventDefault();
-            console.log('trying to chat');
             socket.emit('register', {
               email: email.value,
               password: password.value
@@ -30,6 +29,5 @@ block footerScripts
             return false;
         };
         form.addEventListener('submit', register);
-        socket.on('redirect', function(destination) {
-            window.location.href = destination;
-        });
+        socket.on('set_uid', data => document.cookie = data);
+        socket.on('redirect', destination => window.location.href = destination);
