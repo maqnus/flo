@@ -15,6 +15,7 @@ input {
     padding: 0;
     background-color: #FBF5E5;
     font-family: "Times New Roman", Times, serif;
+    font-family:  "Helvetica Neue", Helvetica, Arial, sans-serif;
     /* font-family: 'Coming Soon', cursive; */
 }
 .page.login {
@@ -58,7 +59,7 @@ input {
 
 .main-wrapper .header {
     text-align: center;
-    margin-top: 3em;
+    margin-top: 7em;
 }
 
 .main-wrapper .main {
@@ -68,6 +69,8 @@ input {
     align-items: center;
     justify-content: center;
     padding: 2rem;
+    background-repeat: no-repeat;
+    background-position: center;
 }
 
 img {

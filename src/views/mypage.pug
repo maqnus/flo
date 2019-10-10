@@ -1,12 +1,18 @@
 extends shared/layout/main.pug
 
 block content
-    - var name = 'Signe Anderson' //'[username]'
     - var title = 'Front-end developer'
     include shared/header.pug
-    div(class="main")
+    div(class="main" style="background-image: url(/assets/login-bg.png);background-position-y: 5em;")
         img(src="/assets/hourglass.png")
         h2(class="status-title") No requests from your colleagues
 
 block footerScripts    
     script(src="./js/main.js")
+    script(src="/socket.io/socket.io.js")
+    script.
+        //- console.log(#{user});
+        const socket = io();
+        socket.emit('userShouldBeLoggedInHere',{});
+        socket.on('redirect', destination => window.location.href = destination);
+        socket.emit('getUserData',{});

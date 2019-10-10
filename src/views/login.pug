@@ -6,17 +6,22 @@ block splash
             img(src="/assets/logo.png" alt="Profile image")
 block content
     header(class="header")
-        h1 Login
-    div(class="main")
+        h1(class="visually-hidden") Login
+    div(class="main" style="background-image: url(/assets/login-bg.png);background-position-y: 1em;")
         form(class="narrow-wrapper" id="loginform")
-            label(for="email") Email
-            input(type="email" name="email" id="email")
-            label(for="password") Password
-            input(type="password" name="password" id="usrpwd")
-            button(type="submit" href="/mypage") Login
-        div(class="narrow-wrapper")
-            a(class="forgot-password" href="/reset-password") Forgot password?
-            a(class="new-user" href="/register") New user
+            div(class="input-wrapper")
+                input(type="email" name="email" id="email" required)
+                label(for="email") Email
+            div(class="input-wrapper")
+                input(type="password" name="password" id="usrpwd" required)
+                label(for="password") Password
+            
+            div(class="narrow-wrapper")
+                a(class="forgot-password" href="/reset-password") Forgot password?
+                a(class="new-user" href="/register") New user
+
+            button(type="submit" href="/mypage")
+                    img(src="/assets/checkmark.png" alt="Login")
 block footerScripts
     script(src="./js/main.js")
     script(src="/socket.io/socket.io.js")
@@ -32,7 +37,6 @@ block footerScripts
               password: password.value
             });
             //- console.log(email.value, password.value);
-            email.value = "";
             return false;
         };
         socket.on('redirect', function(destination) {

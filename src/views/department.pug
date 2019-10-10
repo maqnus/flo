@@ -52,3 +52,8 @@ block content
                     span(class="department") Creative Front End Developer
 block footerScripts
     script(src="./js/main.js")
+    script(src="/socket.io/socket.io.js")
+    script.
+        const socket = io();
+        socket.emit('userShouldBeLoggedInHere',{});
+        socket.on('redirect', destination => window.location.href = destination);

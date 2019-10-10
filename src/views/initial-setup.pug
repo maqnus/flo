@@ -53,7 +53,6 @@ block footerScripts
             event.preventDefault();
             console.log('trying to chat');
             socket.emit('setup', {
-                uid: getCookie('gf_uid'),
                 name: name.value,
                 profileImg: fileOut.value,
                 department: department.value

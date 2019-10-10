@@ -1,6 +1,6 @@
 .profile-image-wrapper {
-    width: 8rem;
-    height: 8rem;
+    width: 5rem;
+    height: 5rem;
     display: block;
     margin: auto;
     border-radius: 50%;
@@ -17,7 +17,8 @@
     margin-top: 1.188rem;
 }
 .profile__title {
-    font-size: 0.875rem
+    font-weight: 200;
+    margin-top: .5em;
 }
 
 .status-title {

@@ -15,6 +15,22 @@ block footerScripts
     script(src="/socket.io/socket.io.js")
     script.
         const socket = io();
+        socket.emit('userShouldBeLoggedInHere',{});
+        socket.on('redirect', destination => window.location.href = destination);
+        socket.on('chat message', props => {
+          const {
+            text
+          } = props;
+            console.log('chat message', props);
+            const li = document.createElement('li');
+            const p = document.createElement('p');
+            p.setAttribute("style", "background-color:" + props.color);
+            const message = document.createTextNode(text);
+            p.appendChild(message);
+            li.appendChild(p);
+            messages.appendChild(li);
+        });
+
         const form = document.getElementById('form');
         const messageInput = document.getElementById('m');
         const messages = document.getElementById('messages');
@@ -36,17 +52,5 @@ block footerScripts
           return false;
         }
         form.addEventListener('submit', postMessage);
-        socket.on('chat message', props => {
-          const {
-            text
-          } = props;
-            console.log('chat message', props);
-            const li = document.createElement('li');
-            const p = document.createElement('p');
-            p.setAttribute("style", "background-color:" + props.color);
-            const message = document.createTextNode(text);
-            p.appendChild(message);
-            li.appendChild(p);
-            messages.appendChild(li);
-        })
+        
     
