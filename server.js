@@ -2,10 +2,22 @@ const express = require('express');
 const app = express(); 
 const http = require('http').createServer(app);
 const io = require('socket.io')(http);
+const firebase = require("firebase");
 const admin = require('firebase-admin');
 const uuid = require('uuidv4').default;
 let serviceAccount = require('./config/grim-8aebe-firebase-adminsdk-pc08t-d4d16e4f38.json');
 
+const firebaseConfig = {
+  apiKey: "AIzaSyBjwGyONriXqNEBdtAnroU_t9bSUGEvado",
+  authDomain: "grim-8aebe.firebaseapp.com",
+  databaseURL: "https://grim-8aebe.firebaseio.com",
+  projectId: "grim-8aebe",
+  storageBucket: "grim-8aebe.appspot.com",
+  messagingSenderId: "646298061526",
+  appId: "1:646298061526:web:adb26466e51c73d9c15777"
+};
+
+firebase.initializeApp(firebaseConfig);
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
   databaseURL: "https://grim-8aebe.firebaseio.com"
@@ -50,17 +62,42 @@ app.get('/', function(req, res){
 });
 
 app.get('/mypage', function(req, res){
-  res.render(__dirname + '/src/views/mypage', {
-    pageTitle: '[username]',
-    heading: '[username]'
+  firebase.auth().onAuthStateChanged(() => {
+    // const user = firebase.auth().currentUser;
+    const user = firebase.auth().currentUser;
+    let name, email, photoUrl, uid, emailVerified;
+
+    if (user != null) {
+      name = user.displayName;
+      email = user.email;
+      photoUrl = user.photoURL;
+      emailVerified = user.emailVerified;
+      uid = user.uid;  // The user's ID, unique to the Firebase project. Do NOT use
+                      // this value to authenticate with your backend server, if
+                      // you have one. Use User.getToken() instead.
+    };
+    // console.log('name:', name, 'email: ', email, 'photoUrl: ', photoUrl, 'emailVerified: ', emailVerified, 'uid: ', uid);
+    res.render(__dirname + '/src/views/mypage', {
+      pageTitle: name,
+      heading: '[username]',
+      userName: name
+    });
   });
 });
 
-app.get('/department', function(req, res){
-  res.render(__dirname + '/src/views/department', {
-    pageTitle: '[department]',
-    heading: '[department]'
-  });
+app.get('/department/:department', function(req, res){
+  console.log('department: ', req.params.department);
+  let currentDepartment = department.find(item => item.id == req.params.department.department);
+  if (currentDepartment) {
+    res.render(__dirname + '/src/views/department', {
+      pageTitle: '[department]',
+      heading: '[department]',
+      model: currentDepartment
+    });
+  } else {
+    pageNotFound();
+  }
+  
 });
 
 app.get('/employee', function(req, res){
@@ -102,57 +139,57 @@ io.on('connection', function(socket) {
     });
     socket.on('login', function(props){
       console.log('login: ' + props);
-      // const usersRef = db.collection('users').doc(props.email);
-      // usersRef.get()
-      //   .then(doc => {
-      //     if (!doc.exists) {
-      //       console.log('No such document!');
-      //     } else {
-      //       const data = doc.data();
-      //       console.log('Document data:', data);
-      //       if (props.password == data.password) {
-      //         io.emit('set_sid', sessionId);
-      //         io.emit('redirect', '/mypage');
-      //       }
-      //     }
-      //   })
-      //   .catch(err => {
-      //     console.log('Error getting document', err);
-      //   });
+      firebase.auth().signInWithEmailAndPassword(props.email, props.password).then(function(){
+        io.emit('redirect', '/mypage');
+      }).catch(function(error) {
+        // Handle Errors here.
+        var errorCode = error.code;
+        var errorMessage = error.message;
+        // ...
+      });
     });
     socket.on('logout', function(props){
       console.log('logout');
       // io.emit('rm_sid', sessionId);
-      io.emit('redirect', '/');
+      firebase.auth().signOut().then(function() {
+        // Sign-out successful.
+        io.emit('redirect', '/');
+      }).catch(function(error) {
+        // An error happened.
+      });
     });
     socket.on('chat message', function(props){
-      io.emit('chat message', props);
-      console.log('message: ' + props);
+      firebase.auth().onAuthStateChanged(function(user) {
+        if (user) {
+          // User is signed in.
+          io.emit('chat message', props);
+        console.log('message: ' + props);
+        } else {
+          // No user is signed in.
+          io.emit('redirect', '/');
+        }
+      });
+      
     });
     socket.on('setup', function(props){
       console.log('Set account data', props);
-      let userRef = db.collection('users').doc(userId);
-      let updateSingle = userRef.set({
-        name: props.name,
-        profileImg: props.profileImg,
-        department: props.department
-      }, {merge: true});
+      io.emit('set_sid', sessionId);
     });
     socket.on('register', function(props){
       console.log('register', props);
-      const data = {
-        email: props.email,
-        password: props.password,
-        id: userId
-      };
-      console.log('register data:', data);
-      db.collection('users').doc(userId).set(data);
-      io.emit('set_uid', createCookieString({ name: 'gf_uid', value: userId, days: 1 }));
-      io.emit('set_sid', sessionId);
+      firebase.auth().createUserWithEmailAndPassword(props.email, props.password).catch(function(error) {
+        // Handle Errors here.
+        var errorCode = error.code;
+        var errorMessage = error.message;
+        // ...
+      });
       io.emit('redirect', '/account-setup');
     });
+    socket.on('forgotPassword', function(props){
+
+    })
     socket.on('set_sid', function(props){
-      io.emit('set_sid', sessionId);
+      // io.emit('set_sid', sessionId);
       io.emit('redirect', '/');
     });
     socket.on('getUserData', function(props){
@@ -161,8 +198,41 @@ io.on('connection', function(socket) {
     });
     socket.on('setup', function(props){
       console.log('setup', props);
+      const user = firebase.auth().currentUser;
+
+      user.updateProfile({
+        displayName: props.name,
+        department: props.department,
+        photoURL: props.profileImg
+      }).then(function() {
+        // Update successful.
+      }).catch(function(error) {
+        // An error happened.
+      });
       io.emit('redirect', '/mypage')
     });
+
+    socket.on('userShouldBeLoggedInHere', function(props){
+      firebase.auth().onAuthStateChanged(function(user) {
+        if (user) {
+          // User is signed in.
+        } else {
+          // No user is signed in.
+          io.emit('redirect', '/')
+        }
+      });
+    })
+
+    socket.on('getUserData', function(props){
+      firebase.auth().onAuthStateChanged(function(user) {
+        // io.emit('setUserData', user);
+        // console.log(user.displayName);
+        // console.log(user.department);
+        // console.log(user.photoURL);
+        // console.log(user.email);
+        // console.log(user.uid);
+      })
+    })
 })
 
 http.listen(app.get('port'), function(){

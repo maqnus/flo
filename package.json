@@ -9,6 +9,7 @@
     "description": "my first socket.io app",
     "dependencies": {
         "express": "^4.15.2",
+        "firebase": "^7.1.0",
         "firebase-admin": "^8.6.0",
         "pug": "^2.0.4",
         "socket.io": "^2.3.0",
