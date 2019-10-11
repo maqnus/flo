@@ -190,7 +190,7 @@ io.on('connection', function(socket) {
     })
     socket.on('set_sid', function(props){
       // io.emit('set_sid', sessionId);
-      io.emit('redirect', '/');
+      // io.emit('redirect', '/');
     });
     socket.on('getUserData', function(props){
       console.log('User data;', props.uid);

@@ -3,7 +3,7 @@ import { getCookie, getSession } from './utils.js';
 
 const socket = io();
 
-// socket.on('redirect', destination => { window.location.href = destination; });
+socket.on('redirect', destination => { window.location.href = destination; });
 
 const sid = getSession('gf_sid');
 if (!sid) {
