@@ -6,24 +6,24 @@ const firebase = require("firebase");
 const admin = require('firebase-admin');
 const uuid = require('uuidv4').default;
 let serviceAccount = require('./config/grim-8aebe-firebase-adminsdk-pc08t-d4d16e4f38.json');
-
-const firebaseConfig = {
-  apiKey: "AIzaSyBjwGyONriXqNEBdtAnroU_t9bSUGEvado",
-  authDomain: "grim-8aebe.firebaseapp.com",
-  databaseURL: "https://grim-8aebe.firebaseio.com",
-  projectId: "grim-8aebe",
-  storageBucket: "grim-8aebe.appspot.com",
-  messagingSenderId: "646298061526",
-  appId: "1:646298061526:web:adb26466e51c73d9c15777"
-};
-
+const firebaseConfig = require('./config/firebaseConfig.json');
+const projectId = "grim-8aebe";
 firebase.initializeApp(firebaseConfig);
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
   databaseURL: "https://grim-8aebe.firebaseio.com"
 });
 
-let db = admin.firestore();
+
+/**
+ * Creates a new app with authentication data matching the input.
+ *
+ * @param {object} auth the object to use for authentication (typically {uid: some-uid})
+ * @return {object} the app.
+ */
+function authedApp(auth) {
+  return firebase.initializeApp({ serviceAccount, auth }).firestore();
+}
 
 app.set('port', (process.env.PORT || 5000));
 app.set('view engine', 'pug');
@@ -55,9 +55,17 @@ app.get('/logout', function(req, res){
 });
 
 app.get('/', function(req, res){
-  res.render(__dirname + '/src/views/login', {
-    layoutType: 'login',
-    pageTitle: 'Login',
+  firebase.auth().onAuthStateChanged(function(user) {
+    if (user) {
+      // User is signed in.
+      res.redirect('/mypage');
+    } else {
+      // No user is signed in.
+      res.render(__dirname + '/src/views/login', {
+        layoutType: 'login',
+        pageTitle: 'Login',
+      });
+    }
   });
 });
 
@@ -134,9 +142,11 @@ io.on('connection', function(socket) {
     console.log('a user connected');
     const sessionId = uuid();
     const userId = uuid();
+
     socket.on('disconnect', function(){
       console.log('user disconnected');
     });
+
     socket.on('login', function(props){
       console.log('login: ' + props);
       firebase.auth().signInWithEmailAndPassword(props.email, props.password).then(function(){
@@ -148,6 +158,7 @@ io.on('connection', function(socket) {
         // ...
       });
     });
+
     socket.on('logout', function(props){
       console.log('logout');
       // io.emit('rm_sid', sessionId);
@@ -158,6 +169,7 @@ io.on('connection', function(socket) {
         // An error happened.
       });
     });
+
     socket.on('chat message', function(props){
       firebase.auth().onAuthStateChanged(function(user) {
         if (user) {
@@ -171,44 +183,44 @@ io.on('connection', function(socket) {
       });
       
     });
-    socket.on('setup', function(props){
-      console.log('Set account data', props);
-      io.emit('set_sid', sessionId);
-    });
+    
     socket.on('register', function(props){
       console.log('register', props);
-      firebase.auth().createUserWithEmailAndPassword(props.email, props.password).catch(function(error) {
-        // Handle Errors here.
-        var errorCode = error.code;
-        var errorMessage = error.message;
-        // ...
-      });
+      // firebase.auth()
+      //   .createUserWithEmailAndPassword(props.email, props.password)
+      //   .catch(function(error) {
+      //   // Handle Errors here.
+      //   var errorCode = error.code;
+      //   var errorMessage = error.message;
+      //   // ...
+      // });
       io.emit('redirect', '/account-setup');
     });
+
     socket.on('forgotPassword', function(props){
 
     })
+
     socket.on('set_sid', function(props){
-      // io.emit('set_sid', sessionId);
-      // io.emit('redirect', '/');
+
     });
+
     socket.on('getUserData', function(props){
       console.log('User data;', props.uid);
       
     });
-    socket.on('setup', function(props){
-      console.log('setup', props);
-      const user = firebase.auth().currentUser;
 
-      user.updateProfile({
-        displayName: props.name,
+    socket.on('setup', function(props){
+      console.log('Set account data', props);
+      const user = firebase.auth().currentUser;
+      const db = authedApp({ uid: user.uid});
+      const profile = db.collection("users").doc(user.uid);
+      profile.set({
+        username: props.username,
         department: props.department,
-        photoURL: props.profileImg
-      }).then(function() {
-        // Update successful.
-      }).catch(function(error) {
-        // An error happened.
+        jobtitle: props.jobtitle
       });
+      // io.emit('set_sid', sessionId);
       io.emit('redirect', '/mypage')
     });
 
