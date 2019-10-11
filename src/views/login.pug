@@ -39,9 +39,7 @@ block footerScripts
             //- console.log(email.value, password.value);
             return false;
         };
-        socket.on('redirect', function(destination) {
-            window.location.href = destination;
-        });
+
         form.addEventListener('submit', login);
 
         const splash = document.getElementById("splash");
