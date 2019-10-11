@@ -15,4 +15,4 @@ block footerScripts
         const socket = io();
         socket.emit('userShouldBeLoggedInHere',{});
         socket.on('redirect', destination => window.location.href = destination);
-        socket.emit('getUserData',{});
+        // socket.emit('getUserData',{});

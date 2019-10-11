@@ -87,6 +87,14 @@ app.get('/mypage', function (req, res) {
       // this value to authenticate with your backend server, if
       // you have one. Use User.getToken() instead.
     };
+
+    // const temp = firebase.database().ref('/users/' + user.uid).once('value').then(function (snapshot) {
+    //   return (snapshot.val() && snapshot.val().username) || 'Anonymous';
+    //   // ...
+    // });
+
+    // console.log(temp);
+
     // console.log('name:', name, 'email: ', email, 'photoUrl: ', photoUrl, 'emailVerified: ', emailVerified, 'uid: ', uid);
     res.render(__dirname + '/src/views/mypage', {
       pageTitle: name,
@@ -212,10 +220,10 @@ io.on('connection', socket => {
 
   });
 
-  socket.on('getUserData', props => {
-    console.log('User data;', props.uid);
+  // socket.on('getUserData', props => {
+  //   console.log('User data;', props.uid);
 
-  });
+  // });
 
   socket.on('setup', async (props) => {
     console.log('Set account data', props);
