@@ -1,26 +1,9 @@
 nav(class="main-nav")
     div(class="container")
         ul(class="nav-list")
-            li
-                a(href="/department/java") Java
-            li
-                a(href="/department/msdev") MsDev
-            li
-                a(href="/department/mssolutions") MsSolutions
-            li
-                a(href="/department/epi") EPI
-            li
-                a(href="/department/baa") BAA
-            li
-                a(href="/department/ux") UX
-            li
-                a(href="/department/trondheim") Trondheim
-            li
-                a(href="/department/aiadvisory") AI Advisory
-            li
-                a(href="/department/admin") Admin
-            li
-                a(href="/department/salesandmarketing") Sales & marketing
+            each opt, index in model.departments
+                li
+                    a(href="/department/" + index)= opt.title
             li
                 a(href="/mypage") My page
             li

@@ -2,54 +2,19 @@ extends shared/layout/plane.pug
 block content
     header(class="header")
         div
-            h1 Department
+            h1= model.departmentsData.title
     div(class="main")
-        ul(class="department-employees")
-            li
-                a(href="/employee")
-                    img(class="goto-employee-arrow" src="/assets/goto.png" alt="Go to user profile")
-                    span(class="name") Eirik Fossheim
-                    span(class="department") Interaction Designer
-            li
-                a(href="/employee")
-                    img(class="goto-employee-arrow" src="/assets/goto.png" alt="Go to user profile")
-                    span(class="name") Mette Landsem
-                    span(class="department") Interaction Designer
-            li
-                a(href="/employee")
-                    img(class="goto-employee-arrow" src="/assets/goto.png" alt="Go to user profile")
-                    span(class="name") Maria Karlsen
-                    span(class="department") Senior UX Designer
-            li
-                a(href="/employee")
-                    img(class="goto-employee-arrow" src="/assets/goto.png" alt="Go to user profile")
-                    span(class="name") Kaja Helene Kristiansen
-                    span(class="department") Creative Front End Developer
-            li
-                a(href="/employee")
-                    img(class="goto-employee-arrow" src="/assets/goto.png" alt="Go to user profile")
-                    span(class="name") Karl Johan Sæth
-                    span(class="department") Head of Design
-            li
-                a(href="/employee")
-                    img(class="goto-employee-arrow" src="/assets/goto.png" alt="Go to user profile")
-                    span(class="name") Marius Vikene
-                    span(class="department") Senior Interaction Designer
-            li
-                a(href="/employee")
-                    img(class="goto-employee-arrow" src="/assets/goto.png" alt="Go to user profile")
-                    span(class="name") Martine Frostad Engeseth
-                    span(class="department") Interaction Designer
-            li
-                a(href="/employee")
-                    img(class="goto-employee-arrow" src="/assets/goto.png" alt="Go to user profile")
-                    span(class="name") Nicklas Svendsrud
-                    span(class="department") Creative Front End Developer
-            li
-                a(href="/employee")
-                    img(class="goto-employee-arrow" src="/assets/goto.png" alt="Go to user profile")
-                    span(class="name") Magnus Kjelland
-                    span(class="department") Creative Front End Developer
+        if model.departmentsData.employees
+            ul(class="department-employees")
+                each employee, index in model.departmentsData.employees
+                    li
+                        a(href="/employee/" + index)
+                            img(class="goto-employee-arrow" src="/assets/goto.png" alt="Go to user profile")
+                            span(class="name")= employee.username
+                            span(class="title")= employee.jobtitle
+        else
+            p No employees listed in department
+            
 block footerScripts
     script(src="./js/main.js")
     script(src="/socket.io/socket.io.js")

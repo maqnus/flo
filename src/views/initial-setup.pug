@@ -12,8 +12,14 @@ block content
                 - var profile = { id: 'imgOut', imageUrl: '/assets/ralph-wave.gif', alt: 'Profile image' }
                 include shared/profile-image.pug
                 input(type="file" accept="image/*" id="imgInp" class="visually-hidden")
-            label Department
-                input(type="text" name="department" id="department")
+            
+            div
+                label(for="department-select") Choose department:
+                select(name="departments" id="department-select")
+                    option(value="")
+                    each opt, index in model.departments
+                        option(value=index)= opt.title
+
             label Jobtitle
                 input(type="text" name="jobtitle" id="jobtitle")
             button(type="submit") Done
@@ -24,7 +30,7 @@ block footerScripts
         const socket = io();
         const form = document.getElementById('loginform');
         const name = document.getElementById('name');
-        const department = document.getElementById('department');
+        const department = document.getElementById('department-select');
         const jobtitle = document.getElementById('jobtitle');
         const fileIn = document.getElementById('imgInp');
         const fileOut = document.getElementById('imgOut');
@@ -54,10 +60,9 @@ block footerScripts
 
         const setup = event => {
             event.preventDefault();
-            console.log('trying to chat');
             socket.emit('setup', {
                 username: name.value,
-                profileImg: fileOut.value,
+                profileImg: fileOut.src,
                 department: department.value,
                 jobtitle: jobtitle.value
             });
