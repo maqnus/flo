@@ -1,9 +1,11 @@
 nav(class="main-nav")
     div(class="container")
         ul(class="nav-list")
-            each opt, index in model.departments
-                li
-                    a(href="/department/" + index)= opt.title
+            if model.departments
+                each opt, index in model.departments
+                    li
+                        a(href="/department/" + index)
+                            span= opt.title
             li
                 a(href="/mypage") My page
             li

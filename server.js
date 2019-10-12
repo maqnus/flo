@@ -76,19 +76,18 @@ app.get('/logout', function (req, res) {
   });
 });
 
-app.get('/', function (req, res) {
-  firebase.auth().onAuthStateChanged(function (user) {
-    if (user) {
-      // User is signed in.
-      res.redirect('/mypage');
-    } else {
-      // No user is signed in.
-      res.render(__dirname + '/src/views/login', {
-        layoutType: 'login',
-        pageTitle: 'Login',
-      });
-    }
-  });
+app.get('/', async (req, res) => {
+  const user = firebase.auth().currentUser;
+  if (user) {
+    // User is signed in.
+    res.redirect('/mypage');
+  } else {
+    // No user is signed in.
+    res.render(__dirname + '/src/views/login', {
+      layoutType: 'login',
+      pageTitle: 'Login',
+    });
+  }
 });
 
 app.get('/mypage', async (req, res) => {
@@ -142,6 +141,7 @@ app.get('/mypage', async (req, res) => {
 });
 
 app.get('/department/:department', async (req, res) => {
+  const user = firebase.auth().currentUser;
   console.log('department: ', req.params.department);
   
   let departmentsData;
@@ -160,13 +160,35 @@ app.get('/department/:department', async (req, res) => {
       // ...
     });
 
-  res.render(__dirname + '/src/views/department', {
-    pageTitle: departmentsData.title,
-    heading: departmentsData.title,
-    model: {
-      departmentsData
-    }
-  });
+  let userData;
+  if (user && user.uid) {
+    await admin
+      .database()
+      .ref('users/' + user.uid)
+      .once('value')
+      .then(snapshot => {
+        userData = snapshot.val();
+      })
+      .catch(error => {
+        // Handle Errors here.
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        // ...
+      })
+  }
+
+  if (user && user.uid) {
+    res.render(__dirname + '/src/views/department', {
+      pageTitle: departmentsData.title,
+      heading: departmentsData.title,
+      model: {
+        userData,
+        departments: departmentsData
+      }
+    });
+  } else {
+    res.redirect('/');
+  }
 
 });
 
@@ -183,10 +205,14 @@ app.get('/chat', function (req, res) {
   });
 });
 
-app.get('*', function (req, res) {
+app.get('*', async (req, res) => {
+  const user = await firebase.auth().currentUser;
+
   res.render(__dirname + '/src/views/404', {
     pageTitle: '404 Page not found',
-    name: 'Magnus'
+    model: {
+      user
+    }
   });
 });
 
@@ -314,27 +340,27 @@ io.on('connection', socket => {
       io.emit('redirect', '/mypage')
   });
 
-  socket.on('userShouldBeLoggedInHere', props => {
-    firebase.auth().onAuthStateChanged(user => {
-      if (user) {
-        // User is signed in.
-      } else {
-        // No user is signed in.
-        io.emit('redirect', '/')
-      }
-    });
-  })
+  // socket.on('userShouldBeLoggedInHere', props => {
+  //   firebase.auth().onAuthStateChanged(user => {
+  //     if (user) {
+  //       // User is signed in.
+  //     } else {
+  //       // No user is signed in.
+  //       io.emit('redirect', '/')
+  //     }
+  //   });
+  // })
 
-  socket.on('getUserData', props => {
-    firebase.auth().onAuthStateChanged(user => {
-      // io.emit('setUserData', user);
-      // console.log(user.displayName);
-      // console.log(user.department);
-      // console.log(user.photoURL);
-      // console.log(user.email);
-      // console.log(user.uid);
-    })
-  })
+  // socket.on('getUserData', props => {
+  //   firebase.auth().onAuthStateChanged(user => {
+  //     // io.emit('setUserData', user);
+  //     // console.log(user.displayName);
+  //     // console.log(user.department);
+  //     // console.log(user.photoURL);
+  //     // console.log(user.email);
+  //     // console.log(user.uid);
+  //   })
+  // })
 })
 
 http.listen(app.get('port'), () => {

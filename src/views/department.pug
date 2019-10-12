@@ -1,12 +1,12 @@
-extends shared/layout/plane.pug
+extends shared/layout/main.pug
 block content
     header(class="header")
         div
-            h1= model.departmentsData.title
+            h1= model.departments.title
     div(class="main")
-        if model.departmentsData.employees
+        if model.departments.employees
             ul(class="department-employees")
-                each employee, index in model.departmentsData.employees
+                each employee, index in model.departments.employees
                     li
                         a(href="/employee/" + index)
                             img(class="goto-employee-arrow" src="/assets/goto.png" alt="Go to user profile")
@@ -14,11 +14,5 @@ block content
                             span(class="title")= employee.jobtitle
         else
             p No employees listed in department
-            
 block footerScripts
     script(src="./js/main.js")
-    script(src="/socket.io/socket.io.js")
-    script.
-        const socket = io();
-        socket.emit('userShouldBeLoggedInHere',{});
-        socket.on('redirect', destination => window.location.href = destination);

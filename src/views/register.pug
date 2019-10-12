@@ -29,5 +29,4 @@ block footerScripts
             return false;
         };
         form.addEventListener('submit', register);
-        //- socket.on('set_uid', data => document.cookie = data);
         socket.on('redirect', destination => window.location.href = destination);
