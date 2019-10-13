@@ -1,7 +1,7 @@
 nav(class="main-nav")
     div(class="container")
         ul(class="nav-list")
-            if model.departments
+            if model && model.departments
                 each opt, index in model.departments
                     li
                         a(href="/department/" + index)

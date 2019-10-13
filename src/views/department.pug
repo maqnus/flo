@@ -2,9 +2,9 @@ extends shared/layout/main.pug
 block content
     header(class="header")
         div
-            h1= model.departments.title
+            h1= model && model.departments && model.departments.pageTitle
     div(class="main")
-        if model.departments.employees
+        if model && model.departments && model.departments.employees
             ul(class="department-employees")
                 each employee, index in model.departments.employees
                     li
