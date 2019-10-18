@@ -1,0 +1,11 @@
+extends shared/layout/main.pug
+block content
+    header(class="header")
+        h1= model.userData.username
+        a(href="/")
+            span= model.currentPage.title
+    div(class="main")
+        include shared/profile-image.pug
+        p Hi! I am a 
+            span= model.userData.jobtitle
+    script(src="./js/main.js")

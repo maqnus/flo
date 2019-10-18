@@ -1,3 +1,4 @@
+
 const express = require('express');
 const app = express();
 const http = require('http').createServer(app);
@@ -5,10 +6,28 @@ const bodyParser = require('body-parser');
 const io = require('socket.io')(http);
 const firebase = require("firebase");
 const admin = require('firebase-admin');
-const uuid = require('uuidv4').default;
 let serviceAccount = require('./config/grim-8aebe-firebase-adminsdk-pc08t-d4d16e4f38.json');
 const firebaseConfig = require('./config/firebaseConfig.json');
-const projectId = "grim-8aebe";
+
+const slugify = (string) => {
+  const a = 'àáâäæãåāăąçćčđďèéêëēėęěğǵḧîïíīįìłḿñńǹňôöòóœøōõṕŕřßśšşșťțûüùúūǘůűųẃẍÿýžźż·/_,:;'
+  const b = 'aaaaaaaaaacccddeeeeeeeegghiiiiiilmnnnnooooooooprrsssssttuuuuuuuuuwxyyzzz------'
+  const p = new RegExp(a.split('').join('|'), 'g')
+
+  return string.toString().toLowerCase()
+      .replace(/\s+/g, '-') // Replace spaces with -
+      .replace(p, c => b.charAt(a.indexOf(c))) // Replace special characters
+      .replace(/&/g, '-and-') // Replace & with 'and'
+      .replace(/[^\w\-]+/g, '') // Remove all non-word characters
+      .replace(/\-\-+/g, '-') // Replace multiple - with single -
+      .replace(/^-+/, '') // Trim - from start of text
+      .replace(/-+$/, '') // Trim - from end of text
+};
+
+const isUnique = (string) => {
+  
+};
+
 firebase.initializeApp(firebaseConfig);
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
@@ -75,7 +94,9 @@ app.get('/setup', async (req, res) => {
 
 app.post('/setup', async (req, res) => {
   const user = firebase.auth().currentUser;
+  const slug = slugify(req.body.username);
   console.log(req.body);
+
   await admin
     .database()
     .ref('users/' + user.uid)
@@ -83,7 +104,8 @@ app.post('/setup', async (req, res) => {
       username: req.body.username,
       department: req.body.department,
       jobtitle: req.body.jobtitle,
-      image: req.body.userimage
+      image: req.body.imageurl,
+      slug
     })
     .catch(error => {
       // Handle Errors here.
@@ -97,8 +119,9 @@ app.post('/setup', async (req, res) => {
     .ref('departments/' + req.body.department + '/employees/' + user.uid) 
     .set({
       username: req.body.username,
-      profileImg: req.body.profileImg,
-      jobtitle: req.body.jobtitle
+      image: req.body.imageurl,
+      jobtitle: req.body.jobtitle,
+      slug
     })
     .catch(error => {
       // Handle Errors here.
@@ -107,7 +130,19 @@ app.post('/setup', async (req, res) => {
       // ...
     })
 
-    res.redirect('/mypage');
+  await admin
+    .database()
+    .ref('slug-to-user-id-map/' + slug) 
+    .set({
+      uid: user.uid
+    })
+    .catch(error => {
+      // Handle Errors here.
+      const errorCode = error.code;
+      const errorMessage = error.message;
+      // ...
+    })
+  res.redirect('/mypage');
 });
 
 app.get('/reset-password', (req, res) => {
@@ -161,14 +196,14 @@ app.post('/login', (req, res) => {
 app.get('/mypage', async (req, res) => {
   const user = firebase.auth().currentUser;
 
-  let departmentsData;
+  let departments;
   await admin
     .database()
     .ref('departments/')
     .once('value')
     .then(snapshot => {
-      departmentsData = snapshot.val();
-      console.log('departmentsData: ', departmentsData);
+      departments = snapshot.val();
+      console.log('departmentsData: ', departments);
     })
     .catch(error => {
       // Handle Errors here.
@@ -199,8 +234,11 @@ app.get('/mypage', async (req, res) => {
       pageTitle: userData.username,
       heading: userData.username,
       model: {
-        userData,
-        departments: departmentsData
+        userData: {
+          ...userData,
+          alt: userData.username
+        },
+        departments
       }
     });
   } else {
@@ -228,14 +266,14 @@ app.get('/department/:department', async (req, res) => {
       // ...
     });
 
-  let departmentsData;
+  let departments;
   await admin
     .database()
     .ref('departments/')
     .once('value')
     .then(snapshot => {
-      departmentsData = snapshot.val();
-      console.log('departmentsData: ', departmentsData);
+      departments = snapshot.val();
+      console.log('departmentsData: ', departments);
     })
     .catch(error => {
       // Handle Errors here.
@@ -263,12 +301,13 @@ app.get('/department/:department', async (req, res) => {
 
   if (user && user.uid) {
     res.render(__dirname + '/src/views/department', {
-      pageTitle: departmentsData.title,
-      heading: departmentsData.title,
+      pageTitle: currentDepartmentData.title,
+      heading: currentDepartmentData.title,
       model: {
         userData,
+        id: req.params.department,
         currentPage: currentDepartmentData,
-        departments: departmentsData
+        departments
       }
     });
   } else {
@@ -277,10 +316,85 @@ app.get('/department/:department', async (req, res) => {
 
 });
 
-app.get('/employee', function (req, res) {
-  res.render(__dirname + '/src/views/employee', {
+app.get('/department/:department/:profile', async (req, res) => {
+  const currentUser = firebase.auth().currentUser;
+  if (!currentUser) {
+    res.redirect('/');
+  }
+
+  let departments;
+  await admin
+    .database()
+    .ref('departments/')
+    .once('value')
+    .then(snapshot => {
+      departments = snapshot.val();
+      console.log('departmentsData: ', departments);
+    })
+    .catch(error => {
+      // Handle Errors here.
+      const errorCode = error.code;
+      const errorMessage = error.message;
+      // ...
+    });
+
+  let currentDepartmentData;
+  await admin
+    .database()
+    .ref('departments/' + req.params.department)
+    .once('value')
+    .then(snapshot => {
+      currentDepartmentData = snapshot.val();
+      console.log('currentDepartmentData: ', currentDepartmentData);
+    })
+    .catch(error => {
+      // Handle Errors here.
+      const errorCode = error.code;
+      const errorMessage = error.message;
+      // ...
+    });
+
+  let user;
+  await admin
+    .database()
+    .ref('slug-to-user-id-map/' + req.params.profile)
+    .once('value')
+    .then(snapshot => {
+      user = snapshot.val();
+      console.log('userId: ', uid);
+    })
+    .catch(error => {
+      // Handle Errors here.
+      const errorCode = error.code;
+      const errorMessage = error.message;
+      // ...
+    });
+  
+  let userData;
+  if (user && user.uid) {
+    await admin
+      .database()
+      .ref('departments/' + req.params.department +'/employees/' + user.uid)
+      .once('value')
+      .then(snapshot => {
+        userData = snapshot.val();
+      })
+      .catch(error => {
+        // Handle Errors here.
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        // ...
+      })
+  }
+
+  res.render(__dirname + '/src/views/profile', {
     pageTitle: '[employee]',
-    heading: '[employee]'
+    heading: '[employee]',
+    model: {
+      userData,
+      departments,
+      currentPage: currentDepartmentData
+    }
   });
 });
 
