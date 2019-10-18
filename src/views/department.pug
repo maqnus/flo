@@ -1,12 +1,13 @@
 extends shared/layout/main.pug
+
 block content
     header(class="header")
         div
-            h1= model && model.departments && model.departments.pageTitle
+            h1= model && model.currentPage && model.currentPage.pageTitle
     div(class="main")
-        if model && model.departments && model.departments.employees
+        if model && model.currentPage && model.currentPage.employees
             ul(class="department-employees")
-                each employee, index in model.departments.employees
+                each employee, index in model.currentPage.employees
                     li
                         a(href="/employee/" + index)
                             img(class="goto-employee-arrow" src="/assets/goto.png" alt="Go to user profile")
@@ -14,5 +15,6 @@ block content
                             span(class="title")= employee.jobtitle
         else
             p No employees listed in department
+
 block footerScripts
-    script(src="./js/main.js")
+    script(src="/js/main.js")

@@ -1,0 +1,46 @@
+extends shared/layout/plane.pug
+block content
+    header(class="header")
+        div
+            h1 Account setup
+    div(class="main")
+        form(id="loginform" action="setup" method="post")
+            label Name
+                input(type="text" name="username" id="username")
+            label
+                span(class="visuallyhidden") Profile picture
+                - var profile = { id: 'imageOut', imageUrl: '/assets/ralph-wave.gif', alt: 'Profile image' }
+                include shared/profile-image.pug
+                input(type="file" name="userimage" accept="image/*" id="imageIn" class="visually-hidden")
+            
+            div
+                label(for="department") Choose department:
+                select(name="department" id="department")
+                    option(value="")
+                    each opt, index in model.departments
+                        option(value=index)= opt.title
+
+            label Jobtitle
+                input(type="text" name="jobtitle" id="jobtitle")
+            button(type="submit") Done
+block footerScripts
+    script(src="./js/main.js")
+    script.
+        const form = document.getElementById('loginform'),
+            name = document.getElementById('name'),
+            department = document.getElementById('department'),
+            jobtitle = document.getElementById('jobtitle'),
+            fileIn = document.getElementById('imageIn'),
+            fileOut = document.getElementById('imageOut');
+
+        const readUrl = event => {
+            if(event.files && event.files[0]) {
+                let reader = new FileReader();
+                    reader.onload = event => fileOut.src = event.target.result;
+                    reader.readAsDataURL(event.files[0]);
+            }
+        }
+
+        fileIn.onchange = () => {
+            readUrl(this);
+        };

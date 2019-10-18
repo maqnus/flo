@@ -15,20 +15,6 @@ admin.initializeApp({
   databaseURL: "https://grim-8aebe.firebaseio.com"
 });
 
-
-// /**
-//  * Creates a new app with authentication data matching the input.
-//  *
-//  * @param {object} auth the object to use for authentication (typically {uid: some-uid})
-//  * @return {object} the app.
-//  */
-// function authedApp(auth) {
-//   return firebase.initializeApp({
-//     serviceAccount,
-//     auth
-//   }).firestore();
-// }
-
 app.set('port', (process.env.PORT || 5000));
 app.set('view engine', 'pug');
 app.use(express.static('public'));
@@ -41,45 +27,55 @@ app.get('/register', (req, res) => {
   res.render(__dirname + '/src/views/register', {
     pageTitle: 'Register'
   });
-})
+});
 
-app.get('/account-setup', async (req, res) => {
-  const user = firebase.auth().currentUser;
-  // if (user) {
-  //   // User is signed in.
-  //   res.redirect('/mypage');
-  // } else {
-  //   // No user is signed in.
-  //   res.redirect('/');
-  // }
-  let departmentsData;
-  await admin
-    .database()
-    .ref('departments/')
-    .once('value')
-    .then(snapshot => {
-      departmentsData = snapshot.val();
-      console.log('departmentsData: ', departmentsData);
-    })
+app.post('/register', (req, res) => {
+  firebase.auth()
+    .createUserWithEmailAndPassword(req.body.email, req.body.password)
+    .then(() => res.redirect('/setup'))
     .catch(error => {
       // Handle Errors here.
       const errorCode = error.code;
       const errorMessage = error.message;
       // ...
-      res.redirect('/mypage');
     });
-  res.render(__dirname + '/src/views/initial-setup', {
-    pageTitle: 'Account setup',
-    model: {
-      departments: departmentsData
-    }
-  });
+});
+
+app.get('/setup', async (req, res) => {
+  const user = firebase.auth().currentUser;
+  if (user) {
+    // User is signed in.
+    let departmentsData;
+    await admin
+      .database()
+      .ref('departments/')
+      .once('value')
+      .then(snapshot => {
+        departmentsData = snapshot.val();
+        console.log('departmentsData: ', departmentsData);
+      })
+      .catch(error => {
+        // Handle Errors here.
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        // ...
+        res.redirect('/mypage');
+      });
+    res.render(__dirname + '/src/views/setup', {
+      pageTitle: 'Account setup',
+      model: {
+        departments: departmentsData
+      }
+    });
+  } else {
+    // No user is signed in.
+    res.redirect('/');
+  }
 });
 
 app.post('/setup', async (req, res) => {
-  console.log('Set account data', req);
   const user = firebase.auth().currentUser;
-  
+  console.log(req.body);
   await admin
     .database()
     .ref('users/' + user.uid)
@@ -87,7 +83,7 @@ app.post('/setup', async (req, res) => {
       username: req.body.username,
       department: req.body.department,
       jobtitle: req.body.jobtitle,
-      profileImg: req.body.profileImg
+      image: req.body.userimage
     })
     .catch(error => {
       // Handle Errors here.
@@ -114,23 +110,15 @@ app.post('/setup', async (req, res) => {
     res.redirect('/mypage');
 });
 
-app.post('/register', (req, res) => {
-  firebase.auth()
-    .createUserWithEmailAndPassword(req.body.email, req.body.password)
-    .then(() => res.redirect('/account-setup'))
-    .catch(error => {
-      // Handle Errors here.
-      const errorCode = error.code;
-      const errorMessage = error.message;
-      // ...
-    });
-});
-
-app.get('/reset-password', function (req, res) {
+app.get('/reset-password', (req, res) => {
   res.render(__dirname + '/src/views/reset-password', {
     pageTitle: 'Reset password',
     heading: 'Forgot your password?'
   });
+});
+
+app.post('/reset-password', (req, res) => {
+  console.log('reset password for email: ', req.body.email);
 });
 
 app.post('/logout', (req, res) => {
@@ -224,10 +212,26 @@ app.get('/department/:department', async (req, res) => {
   const user = firebase.auth().currentUser;
   console.log('department: ', req.params.department);
   
-  let departmentsData;
+  let currentDepartmentData;
   await admin
     .database()
     .ref('departments/' + req.params.department)
+    .once('value')
+    .then(snapshot => {
+      currentDepartmentData = snapshot.val();
+      console.log('currentDepartmentData: ', currentDepartmentData);
+    })
+    .catch(error => {
+      // Handle Errors here.
+      const errorCode = error.code;
+      const errorMessage = error.message;
+      // ...
+    });
+
+  let departmentsData;
+  await admin
+    .database()
+    .ref('departments/')
     .once('value')
     .then(snapshot => {
       departmentsData = snapshot.val();
@@ -263,6 +267,7 @@ app.get('/department/:department', async (req, res) => {
       heading: departmentsData.title,
       model: {
         userData,
+        currentPage: currentDepartmentData,
         departments: departmentsData
       }
     });
@@ -296,29 +301,12 @@ app.get('*', async (req, res) => {
   });
 });
 
-const createCookieString = ({
-  name,
-  value,
-  days
-}) => {
-  let expires = "";
-  if (days) {
-    let date = new Date();
-    date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
-    expires = "; expires=" + date.toUTCString();
-  }
-  return name + "=" + (value || "") + expires + "; path=/";
-}
-
 io.on('connection', socket => {
   // console.log('a user connected');
-  // const sessionId = uuid();
-  // const userId = uuid();
 
   // socket.on('disconnect', () => {
   //   console.log('user disconnected');
   // });
-
 
   // socket.on('chat message', props => {
   //   firebase.auth().onAuthStateChanged(user => {
@@ -334,79 +322,6 @@ io.on('connection', socket => {
 
   // });
 
-
-  // socket.on('forgotPassword', props => {
-
-  // })
-
-  // socket.on('set_sid', props => {
-
-  // });
-
-  // socket.on('getUserData', props => {
-  //   console.log('User data;', props.uid);
-
-  // });
-
-  // socket.on('setup', async props => {
-  //   console.log('Set account data', props);
-  //   const user = firebase.auth().currentUser;
-    
-  //   await admin
-  //     .database()
-  //     .ref('users/' + user.uid)
-  //     .set({
-  //       username: props.username,
-  //       department: props.department,
-  //       jobtitle: props.jobtitle,
-  //       profileImg: props.profileImg
-  //     })
-  //     .catch(error => {
-  //       // Handle Errors here.
-  //       const errorCode = error.code;
-  //       const errorMessage = error.message;
-  //       // ...
-  //     })
-
-  //   await admin
-  //     .database()
-  //     .ref('departments/' + props.department + '/employees/' + user.uid) 
-  //     .set({
-  //       username: props.username,
-  //       profileImg: props.profileImg,
-  //       jobtitle: props.jobtitle
-  //     })
-  //     .catch(error => {
-  //       // Handle Errors here.
-  //       const errorCode = error.code;
-  //       const errorMessage = error.message;
-  //       // ...
-  //     })
-
-  //     io.emit('redirect', '/mypage')
-  // });
-
-  // socket.on('userShouldBeLoggedInHere', props => {
-  //   firebase.auth().onAuthStateChanged(user => {
-  //     if (user) {
-  //       // User is signed in.
-  //     } else {
-  //       // No user is signed in.
-  //       io.emit('redirect', '/')
-  //     }
-  //   });
-  // })
-
-  // socket.on('getUserData', props => {
-  //   firebase.auth().onAuthStateChanged(user => {
-  //     // io.emit('setUserData', user);
-  //     // console.log(user.displayName);
-  //     // console.log(user.department);
-  //     // console.log(user.photoURL);
-  //     // console.log(user.email);
-  //     // console.log(user.uid);
-  //   })
-  // })
 })
 
 http.listen(app.get('port'), () => {
