@@ -1,22 +1,23 @@
-import io from 'socket.io-client';
+// import io from 'socket.io-client';
+import firebase from 'firebase';
 import { getCookie, getSession } from './utils.js'; 
 
-const socket = io();
+// const socket = io();
 
-socket.on('redirect', destination => { window.location.href = destination; });
+// socket.on('redirect', destination => { window.location.href = destination; });
 
-const sid = getSession('gf_sid');
-if (!sid) {
-  socket.emit('set_sid', {});
-} else {
-  console.log('sid:', sid);
-}
-socket.on('set_sid', d => sessionStorage.setItem('gf_sid', d));
+// const sid = getSession('gf_sid');
+// if (!sid) {
+//   socket.emit('set_sid', {});
+// } else {
+//   console.log('sid:', sid);
+// }
+// socket.on('set_sid', d => sessionStorage.setItem('gf_sid', d));
 
-const uid = getCookie('gf_uid');
-if (uid) { socket.emit('getUserData', { uid }); }
+// const uid = getCookie('gf_uid');
+// if (uid) { socket.emit('getUserData', { uid }); }
 
-socket.on('rm_sid', d => sessionStorage.removeItem('gf_sid', d));
+// socket.on('rm_sid', d => sessionStorage.removeItem('gf_sid', d));
 
 const countdownWrapper = document.querySelector('.countdown');
 const countdownToggleButton = document.querySelector('.countdown-toggler');

@@ -4,7 +4,7 @@ block content
         div
             h1 Create a new user
     div(class="main")
-        form(id="loginform")
+        form(id="loginform" action="register" method="post")
             label Email
                 input(type="email" name="email" id="email")
             label Password
@@ -12,21 +12,3 @@ block content
             button(type="submit") Create
 block footerScripts
     script(src="./js/main.js")
-    script(src="/socket.io/socket.io.js")
-    script.
-        const socket = io();
-        const form = document.getElementById('loginform');
-        const email = document.getElementById('email');
-        const password = document.getElementById('password');
-        const register = event => {
-            event.preventDefault();
-            socket.emit('register', {
-              email: email.value,
-              password: password.value
-            });
-            email.value = "";
-            password.value = "";
-            return false;
-        };
-        form.addEventListener('submit', register);
-        socket.on('redirect', destination => window.location.href = destination);

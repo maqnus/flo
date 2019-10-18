@@ -11,7 +11,8 @@ nav(class="main-nav")
             li
                 a(href="/chat") Chat
             li
-                a(href="/logout") Logout
+                form(action="logout" method="post")
+                    button(type="submit") Logout
     button(class="nav-toggler")
         span(class="visually-hidden") Open navigation
         img(class="open" src="/assets/nav-list.png" alt="List")
