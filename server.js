@@ -24,15 +24,6 @@ const slugify = (string) => {
       .replace(/-+$/, '') // Trim - from end of text
 };
 
-const loginCheck = () => {
-  const currentUser = firebase.auth().currentUser;
-  if (!currentUser) {
-    res.redirect('/');
-  } else {
-    return currentUser;
-  }
-};
-
 firebase.initializeApp(firebaseConfig);
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
@@ -66,7 +57,10 @@ app.post('/register', (req, res) => {
 });
 
 app.get('/setup', async (req, res) => {
-  loginCheck();
+  const currentUser = firebase.auth().currentUser;
+  if (!currentUser) {
+    res.redirect('/');
+  }
 
   let departmentsData;
   await admin
@@ -94,7 +88,10 @@ app.get('/setup', async (req, res) => {
 });
 
 app.post('/setup', async (req, res) => {
-  const user = loginCheck();
+  const user = firebase.auth().currentUser;
+  if (!user) {
+    res.redirect('/');
+  }
   const profileSlug = slugify(req.body.username);
 
   await admin
@@ -197,7 +194,10 @@ app.post('/login', (req, res) => {
 });
 
 app.get('/mypage', async (req, res) => {
-  const userData = loginCheck();
+  const userData = firebase.auth().currentUser;
+  if (!userData) {
+    res.redirect('/');
+  }
   const uid = userData.uid;
 
   let departments;
@@ -251,7 +251,10 @@ app.get('/mypage', async (req, res) => {
 });
 
 app.get('/department/:department', async (req, res) => {
-  const userData = loginCheck();
+  const userData = firebase.auth().currentUser;
+  if (!userData) {
+    res.redirect('/');
+  }
   const uid = userData.uid;
   console.log('department: ', req.params.department);
   
@@ -321,7 +324,10 @@ app.get('/department/:department', async (req, res) => {
 });
 
 app.get('/employee/:user', async (req, res) => {
-  loginCheck()
+  const userData = firebase.auth().currentUser;
+  if (!userData) {
+    res.redirect('/');
+  }
 
   let departments;
   await admin
@@ -398,7 +404,10 @@ app.get('/employee/:user', async (req, res) => {
 });
 
 app.get('/chat', function (req, res) {
-  loginCheck();
+  const userData = firebase.auth().currentUser;
+  if (!userData) {
+    res.redirect('/');
+  }
   
   res.render(__dirname + '/src/views/chat', {
     pageTitle: 'Chat'
@@ -406,7 +415,10 @@ app.get('/chat', function (req, res) {
 });
 
 app.get('*', async (req, res) => {
-  const user = loginCheck();
+  const userData = firebase.auth().currentUser;
+  if (!userData) {
+    res.redirect('/');
+  }
 
   res.render(__dirname + '/src/views/404', {
     pageTitle: '404 Page not found',
