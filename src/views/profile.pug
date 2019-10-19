@@ -2,12 +2,12 @@ extends shared/layout/main.pug
 
 block content
     include shared/header.pug
-    //- header(class="header")
-    //-     h1= model.user.username
-    //-     a(href=`/${model.user.department.slug}`)
-    //-         span= model.user.department.title
     div(class="main")
-        //- include shared/profile-image.pug
-        p Hi! I am a 
-            span= model.user && model.user.jobtitle
+        div(class="info-card")
+            img(src="/assets/countdown.png" alt="The user is currently very busy")
+            p Very Busy
+            p Miljødirektoratet
+            p Avalible in
+                span 13min
+
     script(src="/js/main.js")

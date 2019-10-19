@@ -24,3 +24,8 @@
 .status-title {
     font-size: 0.875rem;
 }
+
+.info-card {
+    background-image: url('/assets/info.card-bg.png');
+
+}
