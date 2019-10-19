@@ -3,8 +3,41 @@ extends shared/layout/main.pug
 block content
     include shared/header.pug
     div(class="main" style="background-image: url(/assets/login-bg.png);background-position-y: 5em;")
-        img(src="/assets/hourglass.png")
-        h2(class="status-title") No requests from your colleagues
+        //- div
+        //-     img(src="/assets/hourglass.png")
+        //-     h2(class="status-title") No requests from your colleagues
+        
+        div(class="request-card")
+            div(class="")
+                h3 Eirik Fossheim
+                img(src="/assets/hourglass--very-busy.png" alt="The user is currently very busy")
+            div(class="")
+                p(class="") Miljodirektoratet
+                p(class="") 8mins ago
+
+        div(class="request-card request-card--important")
+            div(class="")
+                h3 Eirik Fossheim
+                img(src="/assets/hourglass--very-busy.png" alt="The user is currently very busy")
+            div(class="")
+                p(class="") Miljodirektoratet
+                p(class="") 8mins ago
+
+        div(class="request-card")
+            div(class="")
+                h3 Eirik Fossheim
+                img(src="/assets/hourglass--very-busy.png" alt="The user is currently very busy")
+            div(class="")
+                p(class="") Miljodirektoratet
+                p(class="") 8mins ago
+
+        div(class="request-card")
+            div(class="")
+                h3 Eirik Fossheim
+                img(src="/assets/hourglass--very-busy.png" alt="The user is currently very busy")
+            div(class="")
+                p(class="") Miljodirektoratet
+                p(class="") 8mins ago
 
 block footerScripts    
     script(src="/js/main.js")
