@@ -1,11 +1,13 @@
 extends shared/layout/main.pug
+
 block content
-    header(class="header")
-        h1= model.userData.username
-        a(href="/")
-            span= model.currentPage.title
+    include shared/header.pug
+    //- header(class="header")
+    //-     h1= model.user.username
+    //-     a(href=`/${model.user.department.slug}`)
+    //-         span= model.user.department.title
     div(class="main")
-        include shared/profile-image.pug
+        //- include shared/profile-image.pug
         p Hi! I am a 
-            span= model.userData.jobtitle
-    script(src="./js/main.js")
+            span= model.user && model.user.jobtitle
+    script(src="/js/main.js")

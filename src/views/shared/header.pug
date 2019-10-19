@@ -1,6 +1,5 @@
 header(class="header")
     div
-        - var profile = { imageUrl: '/assets/ralph-wave.gif', alt: 'Profile image' }
         include profile-image.pug
-        h1(class="profile__name")= model.userData.username
-        p(class="profile__title")= model.userData.jobtitle
+        h1(class="profile__name")= model.user && model.user.username
+        p(class="profile__title")= model.user && model.user.jobtitle

@@ -2,9 +2,9 @@ nav(class="main-nav")
     div(class="container")
         ul(class="nav-list")
             if model && model.departments
-                each opt, index in model.departments
+                each opt in model.departments
                     li
-                        a(href="/department/" + index)
+                        a(href="/department/" + opt.slug)
                             span= opt.title
             li
                 a(href="/mypage") My page
