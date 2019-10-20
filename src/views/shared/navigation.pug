@@ -4,7 +4,7 @@ nav(class="main-nav")
             if model && model.departments
                 each opt in model.departments
                     li
-                        a(href="/department/" + opt.slug)
+                        a(href=`/department/${opt.slug}` z-index="-1")
                             span= opt.title
             li
                 a(href="/mypage") My page

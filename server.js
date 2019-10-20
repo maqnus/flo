@@ -187,9 +187,10 @@ app.post('/login', (req, res) => {
       res.redirect('/mypage');
     }).catch(error => {
       // Handle Errors here.
-      var errorCode = error.code;
-      var errorMessage = error.message;
+      const errorCode = error.code;
+      const errorMessage = error.message;
       // ...
+      res.redirect(`/?error=${errorCode}`);
     });
 });
 
@@ -403,6 +404,18 @@ app.get('/employee/:user', async (req, res) => {
   });
 });
 
+app.get('/request/:requestId', function (req, res) {
+  const userData = firebase.auth().currentUser;
+  if (!userData) {
+    res.redirect('/');
+  }
+  
+  res.render(__dirname + '/src/views/request', {
+    pageTitle: 'Request',
+    heading: 'Request'
+  });
+});
+
 app.get('/chat', function (req, res) {
   const userData = firebase.auth().currentUser;
   if (!userData) {
@@ -410,7 +423,8 @@ app.get('/chat', function (req, res) {
   }
   
   res.render(__dirname + '/src/views/chat', {
-    pageTitle: 'Chat'
+    pageTitle: 'Chat',
+    heading: 'Chat'
   });
 });
 
