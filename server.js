@@ -324,27 +324,25 @@ app.get('/department/:department', async (req, res) => {
 
 });
 
+const getDepartments = async () =>  await admin
+  .database()
+  .ref('departments/')
+  .once('value')
+  .then(snapshot => snapshot.val())
+  .catch(error => {
+    // Handle Errors here.
+    const errorCode = error.code;
+    const errorMessage = error.message;
+    // ...
+  });
+
 app.get('/employee/:user', async (req, res) => {
   const userData = firebase.auth().currentUser;
   if (!userData) {
     res.redirect('/');
   }
 
-  let departments;
-  await admin
-    .database()
-    .ref('departments/')
-    .once('value')
-    .then(snapshot => {
-      departments = snapshot.val();
-      console.log('departmentsData: ', departments);
-    })
-    .catch(error => {
-      // Handle Errors here.
-      const errorCode = error.code;
-      const errorMessage = error.message;
-      // ...
-    });
+  const departments = getDepartments();
 
   let currentDepartmentData;
   await admin
@@ -409,10 +407,15 @@ app.get('/request/:requestId', function (req, res) {
   if (!userData) {
     res.redirect('/');
   }
+
+  const departments = getDepartments();
   
   res.render(__dirname + '/src/views/request', {
     pageTitle: 'Request',
-    heading: 'Request'
+    heading: 'Request',
+    model: {
+      departments
+    }
   });
 });
 
@@ -436,34 +439,32 @@ app.get('*', async (req, res) => {
 
   res.render(__dirname + '/src/views/404', {
     pageTitle: '404 Page not found',
-    model: {
-      user
-    }
+    model: {}
   });
 });
 
-io.on('connection', socket => {
-  // console.log('a user connected');
+// io.on('connection', socket => {
+//   console.log('a user connected');
 
-  // socket.on('disconnect', () => {
-  //   console.log('user disconnected');
-  // });
+//   socket.on('disconnect', () => {
+//     console.log('user disconnected');
+//   });
 
-  // socket.on('chat message', props => {
-  //   firebase.auth().onAuthStateChanged(user => {
-  //     if (user) {
-  //       // User is signed in.
-  //       io.emit('chat message', props);
-  //       console.log('message: ' + props);
-  //     } else {
-  //       // No user is signed in.
-  //       io.emit('redirect', '/');
-  //     }
-  //   });
+//   socket.on('chat message', props => {
+//     firebase.auth().onAuthStateChanged(user => {
+//       if (user) {
+//         // User is signed in.
+//         io.emit('chat message', props);
+//         console.log('message: ' + props);
+//       } else {
+//         // No user is signed in.
+//         io.emit('redirect', '/');
+//       }
+//     });
 
-  // });
+//   });
 
-})
+// });
 
 http.listen(app.get('port'), () => {
   console.log('listening on *:5000');
