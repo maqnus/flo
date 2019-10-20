@@ -97,3 +97,32 @@ a.request-card {
 .request-card__info > *:last-child {
     text-align: right;
 }
+
+
+a.employee-card {
+    color: black;
+    text-decoration: none;
+}
+
+a.employee-card:hover .name {
+    text-decoration: underline;
+}
+
+.employee-card {
+    margin: 2rem 0;
+}
+
+.employee-card .name {
+    display: block;
+    font-size: 1.25rem;
+    max-width: 50%;
+    overflow: visible;
+    line-height: 2rem;
+}
+
+.employee-card .title {
+    display: block;
+    font-size: .88rem;
+    margin-bottom: 2rem;
+    border-top: solid 1px;
+}

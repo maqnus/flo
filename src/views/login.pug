@@ -5,13 +5,14 @@ block splash
         div
             img(src="/assets/logo.png" alt="Profile image")
 block content
+    div(class="background-animation")
+        div(class="inner-container")
+            div(class="shape")
+
     header(class="header")
         h1(class="visually-hidden") Login
-    div(class="main" style="background-image: url(/assets/login-bg.png);background-position-y: 1em;")
-        form(class=`narrow-wrapper ${errorMessage ? '.login-error': ''}` id="loginform" action="login" method="post")
-            if errorMessage
-                div
-                    p= errorMessage
+    div(class="main")
+        form(class="narrow-wrapper" id="loginform" action="login" method="post")
             div(class="input-wrapper")
                 input(type="email" name="email" id="email" required)
                 label(for="email") Email

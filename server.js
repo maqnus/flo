@@ -30,6 +30,54 @@ admin.initializeApp({
   databaseURL: "https://grim-8aebe.firebaseio.com"
 });
 
+const getDepartments = async () => await admin
+  .database()
+  .ref('departments/')
+  .once('value')
+  .then(snapshot => snapshot.val())
+  .catch(error => {
+    // Handle Errors here.
+    const errorCode = error.code;
+    const errorMessage = error.message;
+    // ...
+  });
+
+const getSpesificDepartment = async department => await admin
+  .database()
+  .ref('departments/' + department)
+  .once('value')
+  .then(snapshot => snapshot.val())
+  .catch(error => {
+    // Handle Errors here.
+    const errorCode = error.code;
+    const errorMessage = error.message;
+    // ...
+  });
+
+const getUidFromSlug = async slug => await admin
+  .database()
+  .ref('slug-to-user-id-map/' + slug)
+  .once('value')
+  .then(snapshot => snapshot.val())
+  .catch(error => {
+    // Handle Errors here.
+    const errorCode = error.code;
+    const errorMessage = error.message;
+    // ...
+  });
+
+const getUserData = async uid => await admin
+  .database()
+  .ref('users/' + uid)
+  .once('value')
+  .then(snapshot => snapshot.val())
+  .catch(error => {
+    // Handle Errors here.
+    const errorCode = error.code;
+    const errorMessage = error.message;
+    // ...
+  })
+
 app.set('port', (process.env.PORT || 5000));
 app.set('view engine', 'pug');
 app.use(express.static('public'));
@@ -62,27 +110,12 @@ app.get('/setup', async (req, res) => {
     res.redirect('/');
   }
 
-  let departmentsData;
-  await admin
-    .database()
-    .ref('departments/')
-    .once('value')
-    .then(snapshot => {
-      departmentsData = snapshot.val();
-      console.log('departmentsData: ', departmentsData);
-    })
-    .catch(error => {
-      // Handle Errors here.
-      const errorCode = error.code;
-      const errorMessage = error.message;
-      // ...
-      res.redirect('/mypage');
-    });
+  const departments = await getDepartments();
     
   res.render(__dirname + '/src/views/setup', {
     pageTitle: 'Account setup',
     model: {
-      departments: departmentsData
+      departments
     }
   });
 });
@@ -200,42 +233,10 @@ app.get('/mypage', async (req, res) => {
     res.redirect('/');
   }
   const uid = userData.uid;
+  const departments = await getDepartments();
+  const user = await getUserData(uid);
 
-  let departments;
-  await admin
-    .database()
-    .ref('departments/')
-    .once('value')
-    .then(snapshot => {
-      departments = snapshot.val();
-      console.log('departmentsData: ', departments);
-    })
-    .catch(error => {
-      // Handle Errors here.
-      const errorCode = error.code;
-      const errorMessage = error.message;
-      // ...
-    });
-
-  let user;
-  if (uid) {
-    await admin
-      .database()
-      .ref('users/' + uid)
-      .once('value')
-      .then(snapshot => {
-        user = snapshot.val();
-      })
-      .catch(error => {
-        // Handle Errors here.
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        // ...
-      })
-  }
-
-  if (uid) {
-    res.render(__dirname + '/src/views/mypage', {
+  res.render(__dirname + '/src/views/mypage', {
       pageTitle: user.username,
       heading: user.username,
       model: {
@@ -246,9 +247,6 @@ app.get('/mypage', async (req, res) => {
         departments
       }
     });
-  } else {
-    res.redirect('/');
-  }
 });
 
 app.get('/department/:department', async (req, res) => {
@@ -256,65 +254,20 @@ app.get('/department/:department', async (req, res) => {
   if (!userData) {
     res.redirect('/');
   }
-  const uid = userData.uid;
   console.log('department: ', req.params.department);
-  
-  let currentDepartmentData;
-  await admin
-    .database()
-    .ref('departments/' + req.params.department)
-    .once('value')
-    .then(snapshot => {
-      currentDepartmentData = snapshot.val();
-      console.log('currentDepartmentData: ', currentDepartmentData);
-    })
-    .catch(error => {
-      // Handle Errors here.
-      const errorCode = error.code;
-      const errorMessage = error.message;
-      // ...
-    });
 
-  let departments;
-  await admin
-    .database()
-    .ref('departments/')
-    .once('value')
-    .then(snapshot => {
-      departments = snapshot.val();
-      console.log('departmentsData: ', departments);
-    })
-    .catch(error => {
-      // Handle Errors here.
-      const errorCode = error.code;
-      const errorMessage = error.message;
-      // ...
-    });
-
-  let user;
-  if (uid) {
-    await admin
-      .database()
-      .ref('users/' + uid)
-      .once('value')
-      .then(snapshot => {
-        user = snapshot.val();
-      })
-      .catch(error => {
-        // Handle Errors here.
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        // ...
-      })
-  }
+  const uid = userData.uid;
+  const departments = await getDepartments();
+  const currentPage = await getSpesificDepartment(req.params.department);
+  const user = await getUserData(uid);
 
   if (uid) {
     res.render(__dirname + '/src/views/department', {
-      pageTitle: currentDepartmentData.title,
-      heading: currentDepartmentData.title,
+      pageTitle: currentPage.title,
+      heading: currentPage.title,
       model: {
         user,
-        currentPage: currentDepartmentData,
+        currentPage,
         departments
       }
     });
@@ -324,73 +277,15 @@ app.get('/department/:department', async (req, res) => {
 
 });
 
-const getDepartments = async () =>  await admin
-  .database()
-  .ref('departments/')
-  .once('value')
-  .then(snapshot => snapshot.val())
-  .catch(error => {
-    // Handle Errors here.
-    const errorCode = error.code;
-    const errorMessage = error.message;
-    // ...
-  });
-
 app.get('/employee/:user', async (req, res) => {
   const userData = firebase.auth().currentUser;
   if (!userData) {
     res.redirect('/');
   }
 
-  const departments = getDepartments();
-
-  let currentDepartmentData;
-  await admin
-    .database()
-    .ref('departments/' + req.params.department)
-    .once('value')
-    .then(snapshot => {
-      currentDepartmentData = snapshot.val();
-    })
-    .catch(error => {
-      // Handle Errors here.
-      const errorCode = error.code;
-      const errorMessage = error.message;
-      // ...
-    });
-
-  let uid;
-  await admin
-    .database()
-    .ref('slug-to-user-id-map/' + req.params.user)
-    .once('value')
-    .then(snapshot => {
-      uid = snapshot.val();
-      console.log('snapshot: ', snapshot);
-    })
-    .catch(error => {
-      // Handle Errors here.
-      const errorCode = error.code;
-      const errorMessage = error.message;
-      // ...
-    });
-  
-  let user;
-  if (uid) {
-    await admin
-      .database()
-      .ref('users/' + uid)
-      .once('value')
-      .then(snapshot => {
-        user = snapshot.val();
-      })
-      .catch(error => {
-        // Handle Errors here.
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        // ...
-      })
-  }
+  const departments = await getDepartments();
+  const uid = await getUidFromSlug(req.params.user);
+  const user = await getUserData(uid);
 
   res.render(__dirname + '/src/views/profile', {
     pageTitle: user && user.username,
@@ -402,13 +297,13 @@ app.get('/employee/:user', async (req, res) => {
   });
 });
 
-app.get('/request/:requestId', function (req, res) {
+app.get('/request/:requestId', async (req, res) => {
   const userData = firebase.auth().currentUser;
   if (!userData) {
     res.redirect('/');
   }
 
-  const departments = getDepartments();
+  const departments = await getDepartments();
   
   res.render(__dirname + '/src/views/request', {
     pageTitle: 'Request',
@@ -419,15 +314,22 @@ app.get('/request/:requestId', function (req, res) {
   });
 });
 
-app.get('/chat', function (req, res) {
+app.get('/chat', async (req, res) => {
   const userData = firebase.auth().currentUser;
   if (!userData) {
     res.redirect('/');
   }
+  const uid = userData.uid;
+  const user = await getUserData(uid);
+  const departments = await getDepartments();
   
   res.render(__dirname + '/src/views/chat', {
     pageTitle: 'Chat',
-    heading: 'Chat'
+    heading: 'Chat',
+    model: {
+      user,
+      departments
+    }
   });
 });
 

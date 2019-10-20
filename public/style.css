@@ -1,5 +1,7 @@
-@import url('https://fonts.googleapis.com/css?family=Coming+Soon&display=swap');
+@import url(https://fonts.googleapis.com/css?family=Coming+Soon&display=swap);
+@import url(https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.css);
 
+@import '/css/animating-background.css';
 @import '/css/general.css';
 @import '/css/chat.css';
 @import '/css/login.css';

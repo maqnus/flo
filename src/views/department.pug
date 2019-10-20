@@ -9,7 +9,7 @@ block content
             ul(class="department-employees")
                 each employee, index in model.currentPage.employees
                     li
-                        a(href="/employee/" + employee.slug)
+                        a(href=`/employee/${employee.slug}` class="employee-card")
                             img(class="goto-employee-arrow" src="/assets/goto.png" alt="Go to user profile")
                             span(class="name")= employee.username
                             span(class="title")= employee.jobtitle
