@@ -11,3 +11,9 @@
 @import '/css/department.css';
 @import '/css/cards.css';
 @import '/css/utils.css';
+
+
+#dropbox { 
+    border: 4px dashed #ccc; 
+    padding-left: 8px;
+}
