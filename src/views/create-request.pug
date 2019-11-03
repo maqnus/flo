@@ -1,0 +1,23 @@
+extends shared/layout/main.pug
+
+block content
+    div(class="main")
+        div(class="narrow-wrapper")
+            h2 Create request
+            form(action="/create-request" method="post")
+                div
+                    label(for="project-select") Choose a project:
+                    select(name="project" id="project-select" required)
+                        option(value="" disabled hidden selected) --Please choose an option--
+                        option(value="mdir") Miljødirektoratet
+                        option(value="fhi") Folkehelseinstituttet
+                        option(value="vo") Visit Oslo
+                        option(value="bd") Brødrene Dahl
+                        option(value="tine") Tine
+                        option(value="internal") Internprosjekt
+                        option(value="admin") Admin
+                label Add a message
+                    input(type="text" name="message")
+                label(class="visually-hidden")
+                    input(type="text" name="to" value=`${model.toSlug}`)
+                button(type="submit") submit

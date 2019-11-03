@@ -11,5 +11,9 @@ block content
                 p(class="info__kundenavn") Miljødirektoratet
                 p(class="info__time") Avalible in
                     span 13min
+        a(href=`/create-request/${model.user && model.user.slug}`)
+            span +
+            span(class="visually-hidden") Trekk en kølapp 
 
+block footerScripts
     script(src="/js/main.js")

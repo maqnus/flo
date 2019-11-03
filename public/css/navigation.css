@@ -40,17 +40,25 @@
     list-style: none;
 }
 
+@media (min-width: 480px) {
+    .main-wrapper .main {
+        padding: 2rem;
+    }
+}
+
 .main-nav .container .nav-list li {
     border-bottom: solid 1px;
 }
+
 .nav-list li:nth-child(-n+6) {
-    border-bottom: none;   
+    border-bottom: none;
 }
 
 .main-nav .container .nav-list a {
     color: black;
     text-decoration: none;
 }
+
 .main-nav .container .nav-list a:hover {
     text-decoration: underline;
 }
@@ -58,6 +66,7 @@
 .main-nav.open .container {
     transform: translate3d(0%, 0px, 0px);
 }
+
 .main-nav.open .nav-toggler {
     z-index: 2;
 }
@@ -65,17 +74,20 @@
 .main-nav .nav-toggler .open {
     display: block;
 }
+
 .main-nav.open .nav-toggler .open {
     display: none;
 }
+
 .main-nav .nav-toggler .closed {
     display: none;
 }
+
 .main-nav.open .nav-toggler .closed {
     display: block;
 }
 
-.main-nav.open ~ .page-container {
+.main-nav.open~.page-container {
     /* Add the blur effect */
     filter: blur(8px);
     -webkit-filter: blur(8px);

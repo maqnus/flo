@@ -6,9 +6,9 @@ block content
     div(class="main")
         form(id="loginform" action="setup" method="post")
             label Name
-                input(type="text" name="username" id="username")
+                input(type="text" name="username" id="username" required)
             label
-                span(class="visuallyhidden") Profile picture
+                span(class="visually-hidden") Profile picture
                 picture(class="profile-image-wrapper")
                     img(id='imageOut' src='/assets/ralph-wave.gif' alt='')
                 input(type="file" name="userimage" accept="image/*" id="userimage" class="visually-hidden")
@@ -16,16 +16,16 @@ block content
             
             div
                 label(for="department") Choose department:
-                select(name="department" id="department")
-                    option(value="")
+                select(name="department" id="department" required)
+                    option(value="" disabled hidden selected) --Please choose an option--
                     each opt, index in model.departments
                         option(value=index)= opt.title
 
             label Jobtitle
-                input(type="text" name="jobtitle" id="jobtitle")
+                input(type="text" name="jobtitle" id="jobtitle" required)
             button(type="submit") Done
+
 block footerScripts
-    script(src="/js/main.js")
     script.
         const form = document.getElementById('loginform'),
             name = document.getElementById('name'),

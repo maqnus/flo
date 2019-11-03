@@ -13,7 +13,7 @@ button:focus {
 }
 
 input {
-  font-size: 16px;
+    font-size: 16px;
 }
 
 .page {
@@ -23,18 +23,28 @@ input {
     padding: 0;
     background-color: #FBF5E5;
     font-family: "Times New Roman", Times, serif;
-    font-family:  "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
     /* font-family: 'Coming Soon', cursive; */
 }
+
 .page.login {
     background-color: #E6B5B3;
 }
 
 @keyframes fadeOut {
-    0% { opacity: 1; }
-    80% { opacity: 1; }
-    100% { opacity: 0; }
+    0% {
+        opacity: 1;
+    }
+
+    80% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0;
+    }
 }
+
 #splash {
     z-index: 2;
     position: absolute;
@@ -54,9 +64,7 @@ input {
 .main-wrapper {
     display: flex;
     flex-direction: column;
-    max-width: 500px;
     min-height: 100vh;
-    margin: auto;
 }
 
 .main-wrapper.open-menu {
@@ -81,6 +89,7 @@ input {
     padding-top: 2rem;
 
 }
+
 @media (min-width: 480px) {
     .main-wrapper .main {
         padding: 2rem;
@@ -90,16 +99,20 @@ input {
 img {
     max-width: 100%;
 }
+
 .chat-wrapper {
     width: 100%;
 }
+
 form {
     padding: 3px;
     bottom: 0;
 }
+
 form #m {
     border: 0;
 }
+
 form button {
     border: none;
     padding: 10px;
@@ -111,6 +124,7 @@ form button {
     width: 100%;
     max-width: 20rem;
 }
+
 .page-container {
     display: block;
     position: absolute;
@@ -128,17 +142,18 @@ form button {
 
 
 @keyframes float {
-	0% {
-		box-shadow: 0 5px 15px 0px rgba(0,0,0,0.6);
-		transform: translatey(0px);
-	}
-	50% {
-		box-shadow: 0 25px 15px 0px rgba(0,0,0,0.2);
-		transform: translatey(-20px);
-	}
-	100% {
-		box-shadow: 0 5px 15px 0px rgba(0,0,0,0.6);
-		transform: translatey(0px);
-	}
-}
+    0% {
+        box-shadow: 0 5px 15px 0px rgba(0, 0, 0, 0.6);
+        transform: translatey(0px);
+    }
 
+    50% {
+        box-shadow: 0 25px 15px 0px rgba(0, 0, 0, 0.2);
+        transform: translatey(-20px);
+    }
+
+    100% {
+        box-shadow: 0 5px 15px 0px rgba(0, 0, 0, 0.6);
+        transform: translatey(0px);
+    }
+}

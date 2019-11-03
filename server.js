@@ -1,27 +1,30 @@
-
-const express = require('express');
+const express = require("express");
 const app = express();
-const http = require('http').createServer(app);
-const bodyParser = require('body-parser');
-const io = require('socket.io')(http);
+const http = require("http").createServer(app);
+const bodyParser = require("body-parser");
+const io = require("socket.io")(http);
 const firebase = require("firebase");
-const admin = require('firebase-admin');
-let serviceAccount = require('./config/grim-8aebe-firebase-adminsdk-pc08t-d4d16e4f38.json');
-const firebaseConfig = require('./config/firebaseConfig.json');
+const admin = require("firebase-admin");
+let serviceAccount = require("./config/grim-8aebe-firebase-adminsdk-pc08t-d4d16e4f38.json");
+const firebaseConfig = require("./config/firebaseConfig.json");
 
-const slugify = (string) => {
-  const a = 'àáâäæãåāăąçćčđďèéêëēėęěğǵḧîïíīįìłḿñńǹňôöòóœøōõṕŕřßśšşșťțûüùúūǘůűųẃẍÿýžźż·/_,:;'
-  const b = 'aaaaaaaaaacccddeeeeeeeegghiiiiiilmnnnnooooooooprrsssssttuuuuuuuuuwxyyzzz------'
-  const p = new RegExp(a.split('').join('|'), 'g')
+const slugify = string => {
+  const a =
+    "àáâäæãåāăąçćčđďèéêëēėęěğǵḧîïíīįìłḿñńǹňôöòóœøōõṕŕřßśšşșťțûüùúūǘůűųẃẍÿýžźż·/_,:;";
+  const b =
+    "aaaaaaaaaacccddeeeeeeeegghiiiiiilmnnnnooooooooprrsssssttuuuuuuuuuwxyyzzz------";
+  const p = new RegExp(a.split("").join("|"), "g");
 
-  return string.toString().toLowerCase()
-      .replace(/\s+/g, '-') // Replace spaces with -
-      .replace(p, c => b.charAt(a.indexOf(c))) // Replace special characters
-      .replace(/&/g, '-and-') // Replace & with 'and'
-      .replace(/[^\w\-]+/g, '') // Remove all non-word characters
-      .replace(/\-\-+/g, '-') // Replace multiple - with single -
-      .replace(/^-+/, '') // Trim - from start of text
-      .replace(/-+$/, '') // Trim - from end of text
+  return string
+    .toString()
+    .toLowerCase()
+    .replace(/\s+/g, "-") // Replace spaces with -
+    .replace(p, c => b.charAt(a.indexOf(c))) // Replace special characters
+    .replace(/&/g, "-and-") // Replace & with 'and'
+    .replace(/[^\w\-]+/g, "") // Remove all non-word characters
+    .replace(/\-\-+/g, "-") // Replace multiple - with single -
+    .replace(/^-+/, "") // Trim - from start of text
+    .replace(/-+$/, ""); // Trim - from end of text
 };
 
 firebase.initializeApp(firebaseConfig);
@@ -30,72 +33,96 @@ admin.initializeApp({
   databaseURL: "https://grim-8aebe.firebaseio.com"
 });
 
-const getDepartments = async () => await admin
-  .database()
-  .ref('departments/')
-  .once('value')
-  .then(snapshot => snapshot.val())
-  .catch(error => {
-    // Handle Errors here.
-    const errorCode = error.code;
-    const errorMessage = error.message;
-    // ...
-  });
+const getDepartments = async () =>
+  await admin
+    .database()
+    .ref("departments/")
+    .once("value")
+    .then(snapshot => snapshot.val())
+    .catch(error => {
+      // Handle Errors here.
+      const errorCode = error.code;
+      const errorMessage = error.message;
+      // ...
+    });
 
-const getSpesificDepartment = async department => await admin
-  .database()
-  .ref('departments/' + department)
-  .once('value')
-  .then(snapshot => snapshot.val())
-  .catch(error => {
-    // Handle Errors here.
-    const errorCode = error.code;
-    const errorMessage = error.message;
-    // ...
-  });
+const getSpesificDepartment = async department =>
+  await admin
+    .database()
+    .ref("departments/" + department)
+    .once("value")
+    .then(snapshot => snapshot.val())
+    .catch(error => {
+      // Handle Errors here.
+      const errorCode = error.code;
+      const errorMessage = error.message;
+      // ...
+    });
 
-const getUidFromSlug = async slug => await admin
-  .database()
-  .ref('slug-to-user-id-map/' + slug)
-  .once('value')
-  .then(snapshot => snapshot.val())
-  .catch(error => {
-    // Handle Errors here.
-    const errorCode = error.code;
-    const errorMessage = error.message;
-    // ...
-  });
+const getUidFromSlug = async slug =>
+  await admin
+    .database()
+    .ref("slug-to-user-id-map/" + slug)
+    .once("value")
+    .then(snapshot => snapshot.val())
+    .catch(error => {
+      // Handle Errors here.
+      const errorCode = error.code;
+      const errorMessage = error.message;
+      // ...
+    });
 
-const getUserData = async uid => await admin
-  .database()
-  .ref('users/' + uid)
-  .once('value')
-  .then(snapshot => snapshot.val())
-  .catch(error => {
-    // Handle Errors here.
-    const errorCode = error.code;
-    const errorMessage = error.message;
-    // ...
+const getUserData = async uid =>
+  await admin
+    .database()
+    .ref("users/" + uid)
+    .once("value")
+    .then(snapshot => snapshot.val())
+    .catch(error => {
+      // Handle Errors here.
+      const errorCode = error.code;
+      const errorMessage = error.message;
+      // ...
+    });
+
+const getMessageRequests = async uid => {
+  console.log("getMessageRequests uid: ");
+  console.log(uid);
+  return await admin
+    .database()
+    .ref("user-request/" + uid)
+    .once("value")
+    .then(snapshot => snapshot.val())
+    .catch(error => {
+      // Handle Errors here.
+      const errorCode = error.code;
+      const errorMessage = error.message;
+      // ...
+    });
+};
+
+app.set("port", process.env.PORT || 5000);
+app.set("view engine", "pug");
+app.use(express.static("public"));
+app.use(bodyParser.json()); // to support JSON-encoded bodies
+app.use(
+  bodyParser.urlencoded({
+    // to support URL-encoded bodies
+    extended: true
   })
+);
 
-app.set('port', (process.env.PORT || 5000));
-app.set('view engine', 'pug');
-app.use(express.static('public'));
-app.use(bodyParser.json());         // to support JSON-encoded bodies
-app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
-  extended: true
-}));
-
-app.get('/register', (req, res) => {
-  res.render(__dirname + '/src/views/register', {
-    pageTitle: 'Register'
+app.get("/register", (req, res) => {
+  res.render(__dirname + "/src/views/register", {
+    pageTitle: "Register"
   });
 });
 
-app.post('/register', (req, res) => {
-  firebase.auth()
+app.post("/register", (req, res) => {
+  firebase
+    .auth()
     .createUserWithEmailAndPassword(req.body.email, req.body.password)
-    .then(() => res.redirect('/setup'))
+    .then(() => res.redirect("/setup"))
     .catch(error => {
       // Handle Errors here.
       const errorCode = error.code;
@@ -104,32 +131,32 @@ app.post('/register', (req, res) => {
     });
 });
 
-app.get('/setup', async (req, res) => {
-  const currentUser = firebase.auth().currentUser;
-  if (!currentUser) {
-    res.redirect('/');
+app.get("/setup", async (req, res) => {
+  const userData = firebase.auth().currentUser;
+  if (!userData || !userData.uid) {
+    res.redirect("/");
   }
 
   const departments = await getDepartments();
-    
-  res.render(__dirname + '/src/views/setup', {
-    pageTitle: 'Account setup',
+
+  res.render(__dirname + "/src/views/setup", {
+    pageTitle: "Account setup",
     model: {
       departments
     }
   });
 });
 
-app.post('/setup', async (req, res) => {
-  const user = firebase.auth().currentUser;
-  if (!user) {
-    res.redirect('/');
+app.post("/setup", async (req, res) => {
+  const userData = firebase.auth().currentUser;
+  if (!userData || !userData.uid) {
+    res.redirect("/");
   }
   const profileSlug = slugify(req.body.username);
 
   await admin
     .database()
-    .ref('users/' + user.uid)
+    .ref("users/" + userData.uid)
     .set({
       username: req.body.username,
       department: {
@@ -145,11 +172,11 @@ app.post('/setup', async (req, res) => {
       const errorCode = error.code;
       const errorMessage = error.message;
       // ...
-    })
+    });
 
   await admin
     .database()
-    .ref('departments/' + req.body.department + '/employees/' + user.uid) 
+    .ref("departments/" + req.body.department + "/employees/" + userData.uid)
     .set({
       username: req.body.username,
       image: req.body.imageurl,
@@ -161,64 +188,68 @@ app.post('/setup', async (req, res) => {
       const errorCode = error.code;
       const errorMessage = error.message;
       // ...
-    })
+    });
+
+  const updates = {};
+  updates["slug-to-user-id-map/" + profileSlug] = userData.uid;
 
   await admin
     .database()
-    .ref('slug-to-user-id-map/') 
-    .set({
-      [profileSlug]: user.uid
-    })
+    .ref()
+    .update(updates)
     .catch(error => {
       // Handle Errors here.
       const errorCode = error.code;
       const errorMessage = error.message;
       // ...
-    })
-  res.redirect('/mypage');
-});
-
-app.get('/reset-password', (req, res) => {
-  res.render(__dirname + '/src/views/reset-password', {
-    pageTitle: 'Reset password',
-    heading: 'Forgot your password?'
-  });
-});
-
-app.post('/reset-password', (req, res) => {
-  console.log('reset password for email: ', req.body.email);
-});
-
-app.post('/logout', (req, res) => {
-  firebase.auth().signOut().then(() => {
-    // Sign-out successful.
-    res.redirect('/');
-  }).catch(function (error) {
-    // An error happened.
-  });
-});
-
-app.get('/', async (req, res) => {
-  const user = firebase.auth().currentUser;
-  if (user) {
-    // User is signed in.
-    res.redirect('/mypage');
-  } else {
-    // No user is signed in.
-    res.render(__dirname + '/src/views/login', {
-      layoutType: 'login',
-      pageTitle: 'Login',
     });
-  }
+  res.redirect("/mypage");
 });
 
-app.post('/login', (req, res) => {
+app.get("/reset-password", (req, res) => {
+  res.render(__dirname + "/src/views/reset-password", {
+    pageTitle: "Reset password",
+    heading: "Forgot your password?"
+  });
+});
+
+app.post("/reset-password", (req, res) => {
+  console.log("reset password for email: ", req.body.email);
+});
+
+app.post("/logout", (req, res) => {
+  firebase
+    .auth()
+    .signOut()
+    .then(() => {
+      // Sign-out successful.
+      res.redirect("/");
+    })
+    .catch(function(error) {
+      // An error happened.
+    });
+});
+
+app.get("/", async (req, res) => {
+  const userData = firebase.auth().currentUser;
+  if (userData) {
+    res.redirect("/mypage");
+  }
+
+  res.render(__dirname + "/src/views/login", {
+    layoutType: "login",
+    pageTitle: "Login"
+  });
+});
+
+app.post("/login", (req, res) => {
   firebase
     .auth()
     .signInWithEmailAndPassword(req.body.email, req.body.password)
     .then(() => {
-      res.redirect('/mypage');
-    }).catch(error => {
+      res.redirect("/mypage");
+    })
+    .catch(error => {
       // Handle Errors here.
       const errorCode = error.code;
       const errorMessage = error.message;
@@ -227,34 +258,39 @@ app.post('/login', (req, res) => {
     });
 });
 
-app.get('/mypage', async (req, res) => {
+app.get("/mypage", async (req, res) => {
   const userData = firebase.auth().currentUser;
-  if (!userData) {
-    res.redirect('/');
+  if (!userData || !userData.uid) {
+    res.redirect("/");
   }
   const uid = userData.uid;
+  console.log("uid: ", uid);
   const departments = await getDepartments();
   const user = await getUserData(uid);
+  console.log("user: ", user);
+  const requests = await getMessageRequests(uid);
+  console.log("requestsData: ", requests);
 
-  res.render(__dirname + '/src/views/mypage', {
-      pageTitle: user.username,
-      heading: user.username,
-      model: {
-        user: {
-          ...user,
-          alt: user.username
-        },
-        departments
-      }
-    });
+  res.render(__dirname + "/src/views/mypage", {
+    pageTitle: user.username,
+    heading: user.username,
+    model: {
+      user: {
+        ...user,
+        alt: user.username
+      },
+      requests,
+      departments
+    }
+  });
 });
 
-app.get('/department/:department', async (req, res) => {
+app.get("/department/:department", async (req, res) => {
   const userData = firebase.auth().currentUser;
-  if (!userData) {
-    res.redirect('/');
+  if (!userData || !userData.uid) {
+    res.redirect("/");
   }
-  console.log('department: ', req.params.department);
+  // console.log('department: ', req.params.department);
 
   const uid = userData.uid;
   const departments = await getDepartments();
@@ -262,7 +298,7 @@ app.get('/department/:department', async (req, res) => {
   const user = await getUserData(uid);
 
   if (uid) {
-    res.render(__dirname + '/src/views/department', {
+    res.render(__dirname + "/src/views/department", {
       pageTitle: currentPage.title,
       heading: currentPage.title,
       model: {
@@ -272,22 +308,23 @@ app.get('/department/:department', async (req, res) => {
       }
     });
   } else {
-    res.redirect('/');
+    res.redirect("/");
   }
-
 });
 
-app.get('/employee/:user', async (req, res) => {
+app.get("/employee/:user", async (req, res) => {
   const userData = firebase.auth().currentUser;
-  if (!userData) {
-    res.redirect('/');
+  if (!userData || !userData.uid) {
+    res.redirect("/");
   }
 
   const departments = await getDepartments();
   const uid = await getUidFromSlug(req.params.user);
+  console.log("uid: ", uid);
   const user = await getUserData(uid);
+  console.log("user: ", user);
 
-  res.render(__dirname + '/src/views/profile', {
+  res.render(__dirname + "/src/views/profile", {
     pageTitle: user && user.username,
     heading: user && user.username,
     model: {
@@ -297,35 +334,100 @@ app.get('/employee/:user', async (req, res) => {
   });
 });
 
-app.get('/request/:requestId', async (req, res) => {
+app.get("/request/:requestId", async (req, res) => {
   const userData = firebase.auth().currentUser;
-  if (!userData) {
-    res.redirect('/');
+  if (!userData || !userData.uid) {
+    res.redirect("/");
   }
 
+  const uid = userData.uid;
   const departments = await getDepartments();
-  
-  res.render(__dirname + '/src/views/request', {
-    pageTitle: 'Request',
-    heading: 'Request',
+
+  if (uid) {
+    res.render(__dirname + "/src/views/request", {
+      pageTitle: "Request",
+      heading: "Request",
+      model: {
+        departments
+      }
+    });
+  } else {
+    res.redirect("/");
+  }
+});
+
+app.get("/create-request/:slug", async (req, res) => {
+  const userData = firebase.auth().currentUser;
+  if (!userData || !userData.uid) {
+    res.redirect("/");
+  }
+
+  // const requestUid = await getUidFromSlug(req.params.slug);
+
+  res.render(__dirname + "/src/views/create-request", {
+    pageTitle: "Create request",
+    heading: "Create request",
     model: {
-      departments
+      toSlug: req.params.slug
     }
   });
 });
 
-app.get('/chat', async (req, res) => {
+app.post("/create-request", async (req, res) => {
+  const userData = firebase.auth().currentUser;
+  if (!userData || !userData.uid) {
+    res.redirect("/");
+  }
+
+  const uid = userData.uid;
+  const { project, message, to } = req.body;
+  const toUid = await getUidFromSlug(to);
+  console.log(toUid);
+
+  const postData = {
+    from: uid,
+    project,
+    message
+  };
+
+  // Get a key for a new Post.
+  const newPostKey = admin
+    .database()
+    .ref()
+    .child("requests")
+    .push().key;
+
+  const updates = {};
+  // updates["/requests/" + newPostKey] = postData;
+  updates["/user-request/" + toUid + "/" + newPostKey] = postData;
+
+  await admin
+    .database()
+    .ref()
+    .update(updates)
+    .catch(error => {
+      // Handle Errors here.
+      const errorCode = error.code;
+      const errorMessage = error.message;
+      // ...
+    })
+    .then(() => {
+      res.redirect("/mypage");
+    });
+});
+
+app.get("/chat", async (req, res) => {
   const userData = firebase.auth().currentUser;
   if (!userData) {
-    res.redirect('/');
+    res.redirect("/");
   }
   const uid = userData.uid;
   const user = await getUserData(uid);
   const departments = await getDepartments();
-  
-  res.render(__dirname + '/src/views/chat', {
-    pageTitle: 'Chat',
-    heading: 'Chat',
+
+  res.render(__dirname + "/src/views/chat", {
+    pageTitle: "Chat",
+    heading: "Chat",
     model: {
       user,
       departments
@@ -333,14 +435,14 @@ app.get('/chat', async (req, res) => {
   });
 });
 
-app.get('*', async (req, res) => {
+app.get("*", async (req, res) => {
   const userData = firebase.auth().currentUser;
   if (!userData) {
-    res.redirect('/');
+    res.redirect("/");
   }
 
-  res.render(__dirname + '/src/views/404', {
-    pageTitle: '404 Page not found',
+  res.render(__dirname + "/src/views/404", {
+    pageTitle: "404 Page not found",
     model: {}
   });
 });
@@ -368,6 +470,6 @@ app.get('*', async (req, res) => {
 
 // });
 
-http.listen(app.get('port'), () => {
-  console.log('listening on *:5000');
+http.listen(app.get("port"), () => {
+  console.log("listening on *:5000");
 });

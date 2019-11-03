@@ -15,20 +15,24 @@
     color: transparent;
     background-color: transparent;
 }
+
 .countdown .countdown-toggler .open {
     display: block;
 }
+
 .countdown.open .countdown-toggler .open {
     display: none;
 }
+
 .countdown .countdown-toggler .closed {
     display: none;
 }
+
 .countdown.open .countdown-toggler .closed {
     display: block;
 }
 
-.countdown .amination-background {
+.countdown .countdown-animation-background {
     display: block;
     position: fixed;
     background-color: #DA6343;
@@ -40,6 +44,7 @@
     border-radius: 50%;
     transition: all 0.5s ease 0s;
 }
+
 .countdown .container {
     z-index: 2;
     display: block;
@@ -50,40 +55,39 @@
     bottom: 0;
     height: 100%;
     width: 100vw;
-    display: none;
-    /* border-radius: 50%; */
     overflow-y: scroll !important;
-    /* background-color: #DA6343; */
     background-color: transparent;
     transition: all 0.5s ease 0s;
-    /* transform: translate3d(0%, 0px, 0px); */
+    pointer-events: none;
+    opacity: 0;
 }
 
-.countdown.open .amination-background {
+.countdown.open .container {
+    pointer-events: all;
+    opacity: 1;
+}
+
+.countdown.open .countdown-animation-background {
     width: 300vh;
     height: 300vh;
     top: -100vh;
     left: -100vh;
 }
 
-.countdown.open .container {
-    /* height: 100%;
-    width: 100vw; */
-    /* border-radius: 0%; */
+.countdown .content {
     display: block;
-    transform: translate3d(0%, 0px, 0px);
+    transition: all 0.3s ease-in-out 0s 1s;
+    opacity: 0;
 }
+
+.countdown.open .content {
+    opacity: 1;
+}
+
 .countdown.open .countdown-toggler {
     z-index: 2;
 }
 
-.countdown .container .content {
-    width: 80%;
-    text-align: right;
-    line-height: 2.5;
+.countdown .content {
     margin-top: 8rem;
-}
-
-.countdown.open ~ .page-container {
-    /* transform: translate3d(100%, 0px, 0px); */
 }

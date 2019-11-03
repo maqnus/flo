@@ -24,14 +24,17 @@ if (navigationToggleButton) {
 
 const renderAnimatingBackground = () => {
   let html = '';
-  for (var i = 1; i <= 50; i ++) {
-      html += '<div class="shape-container--'+i+' shape-animation"><div class="random-shape"></div></div>';
+  for (var i = 1; i <= 50; i++) {
+    html += '<div class="shape-container--' + i + ' shape-animation"><div class="random-shape"></div></div>';
   }
-  document.querySelector('.shape').innerHTML += html;
+  const shape = document.querySelector('.shape');
+  if (shape) {
+    shape.innerHTML += html;
+  }
 }
 renderAnimatingBackground();
 
-  
+
 const getQueryParams = (qs) => {
   qs = qs.split('+').join(' ');
 
@@ -40,7 +43,7 @@ const getQueryParams = (qs) => {
   const re = /[?&]?([^=]+)=([^&]*)/g;
 
   while (tokens = re.exec(qs)) {
-      params[decodeURIComponent(tokens[1])] = decodeURIComponent(tokens[2]);
+    params[decodeURIComponent(tokens[1])] = decodeURIComponent(tokens[2]);
   }
 
   return params;
@@ -48,4 +51,3 @@ const getQueryParams = (qs) => {
 
 
 console.log(getQueryParams(document.location.search));
-
