@@ -4,10 +4,11 @@ block content
     include shared/header.pug
 
     div(class="main")
-        //- div
-        //-     img(src="/assets/hourglass.png")
-        //-     h2(class="status-title") No requests from your colleagues
-        if model && model.requests
+        if !model || model.requests.length == 0
+            div
+                img(src="/assets/hourglass.png")
+                h2(class="status-title") No requests from your colleagues
+        if model && model.requests.length > 0
             each request in model.requests
                 a(class="request-card" href=`/request/${request.rid}`)
                     div(class="request-card__content")

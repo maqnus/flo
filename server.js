@@ -414,10 +414,30 @@ app.post("/start-timer", async (req, res) => {
   if (!userData || !userData.uid) {
     res.redirect("/");
   }
+
+  const user = await getUserData(userData.uid);
+
   const {
-    triggerTime
+    time
   } = req.body;
-  console.log('triggerTime: ', triggerTime);
+
+  const updates = {};
+  updates["users/" + userData.uid] = {
+    ...user,
+    lastFocusStart: time
+  };
+
+  await admin
+    .database()
+    .ref()
+    .update(updates)
+    .catch(error => {
+      // Handle Errors here.
+      const errorCode = error.code;
+      const errorMessage = error.message;
+      // ...
+    });
+
   res.redirect("/mypage");
 });
 
