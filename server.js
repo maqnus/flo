@@ -309,12 +309,12 @@ app.get("/mypage", async (req, res) => {
   }
 
   res.render(__dirname + "/src/views/mypage", {
-    pageTitle: user.username,
-    heading: user.username,
+    pageTitle: user && user.username,
+    heading: user && user.username,
     model: {
       user: {
         ...user,
-        alt: user.username
+        alt: user && user.username
       },
       requests,
       departments
@@ -407,6 +407,18 @@ app.get("/create-request/:slug", async (req, res) => {
       projects
     }
   });
+});
+
+app.post("/start-timer", async (req, res) => {
+  const userData = firebase.auth().currentUser;
+  if (!userData || !userData.uid) {
+    res.redirect("/");
+  }
+  const {
+    triggerTime
+  } = req.body;
+  console.log('triggerTime: ', triggerTime);
+  res.redirect("/mypage");
 });
 
 app.post("/create-request", async (req, res) => {

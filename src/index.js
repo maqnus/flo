@@ -51,3 +51,20 @@ const getQueryParams = (qs) => {
 
 
 console.log(getQueryParams(document.location.search));
+
+
+const startTimer = document.getElementById('startTimer');
+if (startTimer) {
+  startTimer.onclick = event => {
+    event.preventDefault();
+
+    fetch('/start-timer', {
+      method: 'POST',
+      body: {
+        triggerTime: new Date()
+      }
+    }).then(() => {
+      alert('yahoo!');
+    })
+  }
+}
