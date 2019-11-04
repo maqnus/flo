@@ -35,59 +35,57 @@ admin.initializeApp({
 
 const getDepartments = async () =>
   await admin
-    .database()
-    .ref("departments/")
-    .once("value")
-    .then(snapshot => snapshot.val())
-    .catch(error => {
-      // Handle Errors here.
-      const errorCode = error.code;
-      const errorMessage = error.message;
-      // ...
-    });
+  .database()
+  .ref("departments/")
+  .once("value")
+  .then(snapshot => snapshot.val())
+  .catch(error => {
+    // Handle Errors here.
+    const errorCode = error.code;
+    const errorMessage = error.message;
+    // ...
+  });
 
 const getSpesificDepartment = async department =>
   await admin
-    .database()
-    .ref("departments/" + department)
-    .once("value")
-    .then(snapshot => snapshot.val())
-    .catch(error => {
-      // Handle Errors here.
-      const errorCode = error.code;
-      const errorMessage = error.message;
-      // ...
-    });
+  .database()
+  .ref("departments/" + department)
+  .once("value")
+  .then(snapshot => snapshot.val())
+  .catch(error => {
+    // Handle Errors here.
+    const errorCode = error.code;
+    const errorMessage = error.message;
+    // ...
+  });
 
 const getUidFromSlug = async slug =>
   await admin
-    .database()
-    .ref("slug-to-user-id-map/" + slug)
-    .once("value")
-    .then(snapshot => snapshot.val())
-    .catch(error => {
-      // Handle Errors here.
-      const errorCode = error.code;
-      const errorMessage = error.message;
-      // ...
-    });
+  .database()
+  .ref("slug-to-user-id-map/" + slug)
+  .once("value")
+  .then(snapshot => snapshot.val())
+  .catch(error => {
+    // Handle Errors here.
+    const errorCode = error.code;
+    const errorMessage = error.message;
+    // ...
+  });
 
 const getUserData = async uid =>
   await admin
-    .database()
-    .ref("users/" + uid)
-    .once("value")
-    .then(snapshot => snapshot.val())
-    .catch(error => {
-      // Handle Errors here.
-      const errorCode = error.code;
-      const errorMessage = error.message;
-      // ...
-    });
+  .database()
+  .ref("users/" + uid)
+  .once("value")
+  .then(snapshot => snapshot.val())
+  .catch(error => {
+    // Handle Errors here.
+    const errorCode = error.code;
+    const errorMessage = error.message;
+    // ...
+  });
 
 const getMessageRequests = async uid => {
-  console.log("getMessageRequests uid: ");
-  console.log(uid);
   return await admin
     .database()
     .ref("user-request/" + uid)
@@ -100,6 +98,32 @@ const getMessageRequests = async uid => {
       // ...
     });
 };
+
+const getProjectData = async pid =>
+  await admin
+  .database()
+  .ref("projects/" + pid)
+  .once("value")
+  .then(snapshot => snapshot.val())
+  .catch(error => {
+    // Handle Errors here.
+    const errorCode = error.code;
+    const errorMessage = error.message;
+    // ...
+  });
+
+const getProjects = async pid =>
+  await admin
+  .database()
+  .ref("projects/")
+  .once("value")
+  .then(snapshot => snapshot.val())
+  .catch(error => {
+    // Handle Errors here.
+    const errorCode = error.code;
+    const errorMessage = error.message;
+    // ...
+  });
 
 app.set("port", process.env.PORT || 5000);
 app.set("view engine", "pug");
@@ -225,7 +249,7 @@ app.post("/logout", (req, res) => {
       // Sign-out successful.
       res.redirect("/");
     })
-    .catch(function(error) {
+    .catch(function (error) {
       // An error happened.
     });
 });
@@ -263,13 +287,26 @@ app.get("/mypage", async (req, res) => {
   if (!userData || !userData.uid) {
     res.redirect("/");
   }
-  const uid = userData.uid;
-  console.log("uid: ", uid);
+  const uid = userData && userData.uid;
   const departments = await getDepartments();
   const user = await getUserData(uid);
-  console.log("user: ", user);
-  const requests = await getMessageRequests(uid);
-  console.log("requestsData: ", requests);
+  const messageRequests = await getMessageRequests(uid);
+
+  let requests = [];
+  for (let request in messageRequests) {
+    const {
+      from,
+      message,
+      project
+    } = messageRequests[request];
+    const fromUser = await getUserData(from);
+    requests.push({
+      rid: request,
+      username: fromUser.username,
+      message,
+      project: await getProjectData(project)
+    });
+  }
 
   res.render(__dirname + "/src/views/mypage", {
     pageTitle: user.username,
@@ -290,7 +327,6 @@ app.get("/department/:department", async (req, res) => {
   if (!userData || !userData.uid) {
     res.redirect("/");
   }
-  // console.log('department: ', req.params.department);
 
   const uid = userData.uid;
   const departments = await getDepartments();
@@ -320,9 +356,7 @@ app.get("/employee/:user", async (req, res) => {
 
   const departments = await getDepartments();
   const uid = await getUidFromSlug(req.params.user);
-  console.log("uid: ", uid);
   const user = await getUserData(uid);
-  console.log("user: ", user);
 
   res.render(__dirname + "/src/views/profile", {
     pageTitle: user && user.username,
@@ -363,12 +397,14 @@ app.get("/create-request/:slug", async (req, res) => {
   }
 
   // const requestUid = await getUidFromSlug(req.params.slug);
+  const projects = await getProjects();
 
   res.render(__dirname + "/src/views/create-request", {
     pageTitle: "Create request",
     heading: "Create request",
     model: {
-      toSlug: req.params.slug
+      toSlug: req.params.slug,
+      projects
     }
   });
 });
@@ -380,9 +416,12 @@ app.post("/create-request", async (req, res) => {
   }
 
   const uid = userData.uid;
-  const { project, message, to } = req.body;
+  const {
+    project,
+    message,
+    to
+  } = req.body;
   const toUid = await getUidFromSlug(to);
-  console.log(toUid);
 
   const postData = {
     from: uid,
