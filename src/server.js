@@ -5,8 +5,8 @@ const bodyParser = require("body-parser");
 const io = require("socket.io")(http);
 const firebase = require("firebase");
 const admin = require("firebase-admin");
-let serviceAccount = require("./config/grim-8aebe-firebase-adminsdk-pc08t-d4d16e4f38.json");
-const firebaseConfig = require("./config/firebaseConfig.json");
+let serviceAccount = require("../config/grim-8aebe-firebase-adminsdk-pc08t-d4d16e4f38.json");
+const firebaseConfig = require("../config/firebaseConfig.json");
 
 const slugify = string => {
   const a =
@@ -127,7 +127,7 @@ const getProjects = async pid =>
 
 app.set("port", process.env.PORT || 5000);
 app.set("view engine", "pug");
-app.use(express.static("public"));
+app.use(express.static("src/public"));
 app.use(bodyParser.json()); // to support JSON-encoded bodies
 app.use(
   bodyParser.urlencoded({
@@ -163,7 +163,7 @@ app.get("/setup", async (req, res) => {
 
   const departments = await getDepartments();
 
-  res.render(__dirname + "/src/views/setup", {
+  res.render(__dirname + "/views/setup", {
     pageTitle: "Account setup",
     model: {
       departments
@@ -231,7 +231,7 @@ app.post("/setup", async (req, res) => {
 });
 
 app.get("/reset-password", (req, res) => {
-  res.render(__dirname + "/src/views/reset-password", {
+  res.render(__dirname + "/views/reset-password", {
     pageTitle: "Reset password",
     heading: "Forgot your password?"
   });
@@ -260,7 +260,7 @@ app.get("/", async (req, res) => {
     res.redirect("/mypage");
   }
 
-  res.render(__dirname + "/src/views/login", {
+  res.render(__dirname + "/views/login", {
     layoutType: "login",
     pageTitle: "Login"
   });
@@ -334,7 +334,7 @@ app.get("/department/:department", async (req, res) => {
   const user = await getUserData(uid);
 
   if (uid) {
-    res.render(__dirname + "/src/views/department", {
+    res.render(__dirname + "/views/department", {
       pageTitle: currentPage.title,
       heading: currentPage.title,
       model: {
@@ -358,7 +358,7 @@ app.get("/employee/:user", async (req, res) => {
   const uid = await getUidFromSlug(req.params.user);
   const user = await getUserData(uid);
 
-  res.render(__dirname + "/src/views/profile", {
+  res.render(__dirname + "/views/profile", {
     pageTitle: user && user.username,
     heading: user && user.username,
     model: {
@@ -378,7 +378,7 @@ app.get("/request/:requestId", async (req, res) => {
   const departments = await getDepartments();
 
   if (uid) {
-    res.render(__dirname + "/src/views/request", {
+    res.render(__dirname + "/views/request", {
       pageTitle: "Request",
       heading: "Request",
       model: {
@@ -399,7 +399,7 @@ app.get("/create-request/:slug", async (req, res) => {
   // const requestUid = await getUidFromSlug(req.params.slug);
   const projects = await getProjects();
 
-  res.render(__dirname + "/src/views/create-request", {
+  res.render(__dirname + "/views/create-request", {
     pageTitle: "Create request",
     heading: "Create request",
     model: {
@@ -496,7 +496,7 @@ app.get("/chat", async (req, res) => {
   const user = await getUserData(uid);
   const departments = await getDepartments();
 
-  res.render(__dirname + "/src/views/chat", {
+  res.render(__dirname + "/views/chat", {
     pageTitle: "Chat",
     heading: "Chat",
     model: {
@@ -512,7 +512,7 @@ app.get("*", async (req, res) => {
     res.redirect("/");
   }
 
-  res.render(__dirname + "/src/views/404", {
+  res.render(__dirname + "/views/404", {
     pageTitle: "404 Page not found",
     model: {}
   });

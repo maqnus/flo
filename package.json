@@ -2,9 +2,9 @@
     "name": "flo",
     "version": "0.0.1",
     "scripts": {
-        "serve": "npx nodemon server.js",
-        "build": "npx webpack --config config/webpack.config.js",
-        "watch": "npx webpack --config config/webpack.config.js --watch"
+        "serve": "npx nodemon src/server.js",
+        "build": "npx webpack --config ./config/webpack.config.js",
+        "watch": "npx webpack --config ./config/webpack.config.js --watch"
     },
     "description": "A connectivity app",
     "dependencies": {
