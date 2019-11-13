@@ -1,137 +1,35 @@
 import "core-js/stable";
 import "regenerator-runtime/runtime";
+
 import express from "express";
-const app = express();
-const http = require("http").createServer(app);
-import { json, urlencoded } from "body-parser";
-// const io = require("socket.io")(http);
-import firebase from 'firebase'
-require('firebase/auth')
+
+import { urlencoded, json } from 'body-parser';
+import { uploader, cloudinaryConfig } from './config/cloudinaryConfig';
+import { multerUploads, dataUri } from './middlewares/multerUpload';
+
+import firebase from 'firebase';
 import * as admin from "firebase-admin";
 import serviceAccount from "./config/grim-8aebe-firebase-adminsdk-pc08t-d4d16e4f38.json";
 import firebaseConfig from "./config/firebaseConfig.json";
 
-const slugify = string => {
-  const a =
-    "àáâäæãåāăąçćčđďèéêëēėęěğǵḧîïíīįìłḿñńǹňôöòóœøōõṕŕřßśšşșťțûüùúūǘůűųẃẍÿýžźż·/_,:;";
-  const b =
-    "aaaaaaaaaacccddeeeeeeeegghiiiiiilmnnnnooooooooprrsssssttuuuuuuuuuwxyyzzz------";
-  const p = new RegExp(a.split("").join("|"), "g");
+import * as utils from "./utils.js"
 
-  return string
-    .toString()
-    .toLowerCase()
-    .replace(/\s+/g, "-") // Replace spaces with -
-    .replace(p, c => b.charAt(a.indexOf(c))) // Replace special characters
-    .replace(/&/g, "-and-") // Replace & with 'and'
-    .replace(/[^\w\-]+/g, "") // Remove all non-word characters
-    .replace(/\-\-+/g, "-") // Replace multiple - with single -
-    .replace(/^-+/, "") // Trim - from start of text
-    .replace(/-+$/, ""); // Trim - from end of text
-};
+const app = express();
+const http = require("http").createServer(app);
+// const io = require("socket.io")(http);
 
 firebase.initializeApp(firebaseConfig);
-
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
   databaseURL: "https://grim-8aebe.firebaseio.com"
 });
 
-const getDepartments = async () =>
-  await admin.database()
-  .ref("departments/")
-  .once("value")
-  .then(snapshot => snapshot.val())
-  .catch(error => {
-    // Handle Errors here.
-    const errorCode = error.code;
-    const errorMessage = error.message;
-    // ...
-  });
-
-const getSpesificDepartment = async department =>
-  await admin.database()
-  .ref(`departments/${department}`)
-  .once("value")
-  .then(snapshot => snapshot.val())
-  .catch(error => {
-    // Handle Errors here.
-    const errorCode = error.code;
-    const errorMessage = error.message;
-    // ...
-  });
-
-const getUidFromSlug = async slug =>
-  await admin.database()
-  .ref(`slug-to-user-id-map/${slug}`)
-  .once("value")
-  .then(snapshot => snapshot.val())
-  .catch(error => {
-    // Handle Errors here.
-    const errorCode = error.code;
-    const errorMessage = error.message;
-    // ...
-  });
-
-const getUserData = async uid =>
-  await admin.database()
-  .ref("users/" + uid)
-  .once("value")
-  .then(snapshot => snapshot.val())
-  .catch(error => {
-    // Handle Errors here.
-    const errorCode = error.code;
-    const errorMessage = error.message;
-    // ...
-  });
-
-const getMessageRequests = async uid => {
-  return await admin.database()
-    .ref("user-request/" + uid)
-    .once("value")
-    .then(snapshot => snapshot.val())
-    .catch(error => {
-      // Handle Errors here.
-      const errorCode = error.code;
-      const errorMessage = error.message;
-      // ...
-    });
-};
-
-const getProjectData = async pid =>
-  await admin.database()
-  .ref("projects/" + pid)
-  .once("value")
-  .then(snapshot => snapshot.val())
-  .catch(error => {
-    // Handle Errors here.
-    const errorCode = error.code;
-    const errorMessage = error.message;
-    // ...
-  });
-
-const getProjects = async pid =>
-  await admin.database()
-  .ref("projects/")
-  .once("value")
-  .then(snapshot => snapshot.val())
-  .catch(error => {
-    // Handle Errors here.
-    const errorCode = error.code;
-    const errorMessage = error.message;
-    // ...
-  });
-
 app.set("port", process.env.PORT || 5000);
 app.set("view engine", "pug");
 app.use(express.static("src/public"));
 app.use(json()); // to support JSON-encoded bodies
-app.use(
-  urlencoded({
-    // to support URL-encoded bodies
-    extended: true
-  })
-);
+app.use('*', cloudinaryConfig);
+app.use(urlencoded({ extended: false }));
 
 app.get("/register", (req, res) => {
   res.render(__dirname + "/views/register", {
@@ -157,7 +55,7 @@ app.get("/setup", async (req, res) => {
     res.redirect("/");
   }
 
-  const departments = await getDepartments();
+  const departments = await utils.getDepartments(admin.database());
 
   res.render(__dirname + "/views/setup", {
     pageTitle: "Account setup",
@@ -167,12 +65,32 @@ app.get("/setup", async (req, res) => {
   });
 });
 
+app.post('/upload', multerUploads, (req, res) => {
+  if(req.file) {
+   const file = dataUri(req).content;
+   return uploader.upload(file).then((result) => {
+     const image = result.url;
+     return res.status(200).json({
+       messge: 'Your image has been uploded successfully to cloudinary',
+       data: {
+         image
+       }
+     })
+   }).catch((err) => res.status(400).json({
+     messge: 'someting went wrong while processing your request',
+     data: {
+       err
+     }
+   }))
+  }
+ });
+
 app.post("/setup", async (req, res) => {
   const userData = firebase.auth().currentUser;
   if (!userData || !userData.uid) {
     res.redirect("/");
   }
-  const profileSlug = slugify(req.body.username);
+  const profileSlug = serverUtil.slugify(req.body.username);
 
   await admin.database()
     .ref("users/" + userData.uid)
@@ -180,7 +98,7 @@ app.post("/setup", async (req, res) => {
       username: req.body.username,
       department: {
         title: req.body.department,
-        slug: slugify(req.body.department)
+        slug: serverUtil.slugify(req.body.department)
       },
       jobtitle: req.body.jobtitle,
       image: req.body.imageurl,
@@ -279,9 +197,9 @@ app.get("/mypage", async (req, res) => {
     res.redirect("/");
   }
   const uid = userData && userData.uid;
-  const departments = await getDepartments();
-  const user = await getUserData(uid);
-  const messageRequests = await getMessageRequests(uid);
+  const departments = await utils.getDepartments(admin.database());
+  const user = await utils.getUserData(admin.database(), uid);
+  const messageRequests = await utils.getMessageRequests(admin.database(), uid);
 
   let requests = [];
   for (let request in messageRequests) {
@@ -290,12 +208,12 @@ app.get("/mypage", async (req, res) => {
       message,
       project
     } = messageRequests[request];
-    const fromUser = await getUserData(from);
+    const fromUser = await utils.getUserData(admin.database(), from);
     requests.push({
       rid: request,
       username: fromUser.username,
       message,
-      project: await getProjectData(project)
+      project: await utils.getProjectData(admin.database(), project)
     });
   }
 
@@ -320,9 +238,9 @@ app.get("/department/:department", async (req, res) => {
   }
 
   const uid = userData.uid;
-  const departments = await getDepartments();
-  const currentPage = await getSpesificDepartment(req.params.department);
-  const user = await getUserData(uid);
+  const departments = await utils.getDepartments(admin.database());
+  const currentPage = await utils.getSpesificDepartment(admin.database(), req.params.department);
+  const user = await utils.getUserData(admin.database(), uid);
 
   if (uid) {
     res.render(__dirname + "/views/department", {
@@ -345,9 +263,9 @@ app.get("/employee/:user", async (req, res) => {
     res.redirect("/");
   }
 
-  const departments = await getDepartments();
-  const uid = await getUidFromSlug(req.params.user);
-  const user = await getUserData(uid);
+  const departments = await utils.getDepartments(admin.database());
+  const uid = await utils.getUidFromSlug(admin.database(), req.params.user);
+  const user = await utils.getUserData(admin.database(), uid);
 
   res.render(__dirname + "/views/profile", {
     pageTitle: user && user.username,
@@ -366,7 +284,7 @@ app.get("/request/:requestId", async (req, res) => {
   }
 
   const uid = userData.uid;
-  const departments = await getDepartments();
+  const departments = await utils.getDepartments(admin.database());
 
   if (uid) {
     res.render(__dirname + "/views/request", {
@@ -387,8 +305,8 @@ app.get("/create-request/:slug", async (req, res) => {
     res.redirect("/");
   }
 
-  // const requestUid = await getUidFromSlug(req.params.slug);
-  const projects = await getProjects();
+  // const requestUid = await getUidFromSlug(admin.database(), req.params.slug);
+  const projects = await utils.getProjects(admin.database());
 
   res.render(__dirname + "/views/create-request", {
     pageTitle: "Create request",
@@ -406,7 +324,7 @@ app.post("/start-timer", async (req, res) => {
     res.redirect("/");
   }
 
-  const user = await getUserData(userData.uid);
+  const user = await utils.getUserData(admin.database(), userData.uid);
 
   const {
     time
@@ -443,7 +361,7 @@ app.post("/create-request", async (req, res) => {
     message,
     to
   } = req.body;
-  const toUid = await getUidFromSlug(to);
+  const toUid = await utils.getUidFromSlug(admin.database(), to);
 
   const postData = {
     from: uid,
@@ -481,8 +399,8 @@ app.get("/chat", async (req, res) => {
     res.redirect("/");
   }
   const uid = userData.uid;
-  const user = await getUserData(uid);
-  const departments = await getDepartments();
+  const user = await utils.getUserData(admin.database(), uid);
+  const departments = await utils.getDepartments(admin.database());
 
   res.render(__dirname + "/views/chat", {
     pageTitle: "Chat",
