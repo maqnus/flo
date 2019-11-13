@@ -2,9 +2,9 @@
     "name": "flo",
     "version": "0.0.1",
     "scripts": {
-        "serve": "nodemon --require @babel/register src/server.js",
-        "build": "webpack --require @babel/register --config src/config/webpack.config.js",
-        "watch": "webpack --require @babel/register --config src/config/webpack.config.js --watch"
+        "serve": "nodemon --require @babel/register src/server/index.js",
+        "build": "webpack --require @babel/register --config src/server/config/webpack.config.js",
+        "watch": "webpack --require @babel/register --config src/server/config/webpack.config.js --watch"
     },
     "description": "A connectivity app",
     "dependencies": {
