@@ -1,12 +1,15 @@
-const express = require("express");
+import "core-js/stable";
+import "regenerator-runtime/runtime";
+import express from "express";
 const app = express();
 const http = require("http").createServer(app);
-const bodyParser = require("body-parser");
-const io = require("socket.io")(http);
-const firebase = require("firebase");
-const admin = require("firebase-admin");
-let serviceAccount = require("../config/grim-8aebe-firebase-adminsdk-pc08t-d4d16e4f38.json");
-const firebaseConfig = require("../config/firebaseConfig.json");
+import { json, urlencoded } from "body-parser";
+// const io = require("socket.io")(http);
+import firebase from 'firebase'
+require('firebase/auth')
+import * as admin from "firebase-admin";
+import serviceAccount from "./config/grim-8aebe-firebase-adminsdk-pc08t-d4d16e4f38.json";
+import firebaseConfig from "./config/firebaseConfig.json";
 
 const slugify = string => {
   const a =
@@ -28,14 +31,14 @@ const slugify = string => {
 };
 
 firebase.initializeApp(firebaseConfig);
+
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
   databaseURL: "https://grim-8aebe.firebaseio.com"
 });
 
 const getDepartments = async () =>
-  await admin
-  .database()
+  await admin.database()
   .ref("departments/")
   .once("value")
   .then(snapshot => snapshot.val())
@@ -47,9 +50,8 @@ const getDepartments = async () =>
   });
 
 const getSpesificDepartment = async department =>
-  await admin
-  .database()
-  .ref("departments/" + department)
+  await admin.database()
+  .ref(`departments/${department}`)
   .once("value")
   .then(snapshot => snapshot.val())
   .catch(error => {
@@ -60,9 +62,8 @@ const getSpesificDepartment = async department =>
   });
 
 const getUidFromSlug = async slug =>
-  await admin
-  .database()
-  .ref("slug-to-user-id-map/" + slug)
+  await admin.database()
+  .ref(`slug-to-user-id-map/${slug}`)
   .once("value")
   .then(snapshot => snapshot.val())
   .catch(error => {
@@ -73,8 +74,7 @@ const getUidFromSlug = async slug =>
   });
 
 const getUserData = async uid =>
-  await admin
-  .database()
+  await admin.database()
   .ref("users/" + uid)
   .once("value")
   .then(snapshot => snapshot.val())
@@ -86,8 +86,7 @@ const getUserData = async uid =>
   });
 
 const getMessageRequests = async uid => {
-  return await admin
-    .database()
+  return await admin.database()
     .ref("user-request/" + uid)
     .once("value")
     .then(snapshot => snapshot.val())
@@ -100,8 +99,7 @@ const getMessageRequests = async uid => {
 };
 
 const getProjectData = async pid =>
-  await admin
-  .database()
+  await admin.database()
   .ref("projects/" + pid)
   .once("value")
   .then(snapshot => snapshot.val())
@@ -113,8 +111,7 @@ const getProjectData = async pid =>
   });
 
 const getProjects = async pid =>
-  await admin
-  .database()
+  await admin.database()
   .ref("projects/")
   .once("value")
   .then(snapshot => snapshot.val())
@@ -128,23 +125,22 @@ const getProjects = async pid =>
 app.set("port", process.env.PORT || 5000);
 app.set("view engine", "pug");
 app.use(express.static("src/public"));
-app.use(bodyParser.json()); // to support JSON-encoded bodies
+app.use(json()); // to support JSON-encoded bodies
 app.use(
-  bodyParser.urlencoded({
+  urlencoded({
     // to support URL-encoded bodies
     extended: true
   })
 );
 
 app.get("/register", (req, res) => {
-  res.render(__dirname + "/src/views/register", {
+  res.render(__dirname + "/views/register", {
     pageTitle: "Register"
   });
 });
 
 app.post("/register", (req, res) => {
-  firebase
-    .auth()
+  firebase.auth()
     .createUserWithEmailAndPassword(req.body.email, req.body.password)
     .then(() => res.redirect("/setup"))
     .catch(error => {
@@ -178,8 +174,7 @@ app.post("/setup", async (req, res) => {
   }
   const profileSlug = slugify(req.body.username);
 
-  await admin
-    .database()
+  await admin.database()
     .ref("users/" + userData.uid)
     .set({
       username: req.body.username,
@@ -198,8 +193,7 @@ app.post("/setup", async (req, res) => {
       // ...
     });
 
-  await admin
-    .database()
+  await admin.database()
     .ref("departments/" + req.body.department + "/employees/" + userData.uid)
     .set({
       username: req.body.username,
@@ -217,8 +211,7 @@ app.post("/setup", async (req, res) => {
   const updates = {};
   updates["slug-to-user-id-map/" + profileSlug] = userData.uid;
 
-  await admin
-    .database()
+  await admin.database()
     .ref()
     .update(updates)
     .catch(error => {
@@ -242,8 +235,7 @@ app.post("/reset-password", (req, res) => {
 });
 
 app.post("/logout", (req, res) => {
-  firebase
-    .auth()
+  firebase.auth()
     .signOut()
     .then(() => {
       // Sign-out successful.
@@ -267,8 +259,7 @@ app.get("/", async (req, res) => {
 });
 
 app.post("/login", (req, res) => {
-  firebase
-    .auth()
+  firebase.auth()
     .signInWithEmailAndPassword(req.body.email, req.body.password)
     .then(() => {
       res.redirect("/mypage");
@@ -308,7 +299,7 @@ app.get("/mypage", async (req, res) => {
     });
   }
 
-  res.render(__dirname + "/src/views/mypage", {
+  res.render(__dirname + "/views/mypage", {
     pageTitle: user && user.username,
     heading: user && user.username,
     model: {
@@ -391,7 +382,7 @@ app.get("/request/:requestId", async (req, res) => {
 });
 
 app.get("/create-request/:slug", async (req, res) => {
-  const userData = firebase.auth().currentUser;
+  const userData = auth().currentUser;
   if (!userData || !userData.uid) {
     res.redirect("/");
   }
@@ -410,7 +401,7 @@ app.get("/create-request/:slug", async (req, res) => {
 });
 
 app.post("/start-timer", async (req, res) => {
-  const userData = firebase.auth().currentUser;
+  const userData = auth().currentUser;
   if (!userData || !userData.uid) {
     res.redirect("/");
   }
@@ -427,8 +418,7 @@ app.post("/start-timer", async (req, res) => {
     lastFocusStart: time
   };
 
-  await admin
-    .database()
+  await admin.database()
     .ref()
     .update(updates)
     .catch(error => {
@@ -462,8 +452,7 @@ app.post("/create-request", async (req, res) => {
   };
 
   // Get a key for a new Post.
-  const newPostKey = admin
-    .database()
+  const newPostKey = admin.database()
     .ref()
     .child("requests")
     .push().key;
@@ -472,8 +461,7 @@ app.post("/create-request", async (req, res) => {
   // updates["/requests/" + newPostKey] = postData;
   updates["/user-request/" + toUid + "/" + newPostKey] = postData;
 
-  await admin
-    .database()
+  await admin.database()
     .ref()
     .update(updates)
     .catch(error => {
