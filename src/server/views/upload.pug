@@ -1,0 +1,14 @@
+extends shared/layout/main.pug
+
+block content
+    include shared/header.pug
+
+    div(class="main")
+        form(id="loginform" action="upload" method="post" enctype="multipart/form-data")
+            input(type="text" name="message" id="message")
+            label Profile picture
+                input(type="file" name="fileToUpload" id="fileToUpload" accept="image/*")
+            button(type="submit" name="submit") Last opp!
+block footerScripts    
+    script.
+        console.log('test upload');

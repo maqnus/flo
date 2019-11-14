@@ -4,7 +4,7 @@ block content
         div
             h1 Account setup
     div(class="main")
-        form(id="loginform" action="setup" method="post")
+        form(id="loginform" action="setup" method="post" enctype="multipart/form-data")
             label Name
                 input(type="text" name="username" id="username" required)
             label
@@ -12,7 +12,6 @@ block content
                 picture(class="profile-image-wrapper")
                     img(id='imageOut' src='/assets/ralph-wave.gif' alt='')
                 input(type="file" name="userimage" accept="image/*" id="userimage" class="visually-hidden")
-                input(type="string" name="imageurl" id="imageurl" class="visually-hidden")
             
             div
                 label(for="department") Choose department:
@@ -28,19 +27,14 @@ block content
 block footerScripts
     script.
         const form = document.getElementById('loginform'),
-            name = document.getElementById('name'),
-            department = document.getElementById('department'),
-            jobtitle = document.getElementById('jobtitle'),
             fileIn = document.getElementById('userimage'),
             fileOut = document.getElementById('imageOut'),
-            imageurl = document.getElementById('imageurl');
 
         const readUrl = event => {
             if(event.files && event.files[0]) {
                 let reader = new FileReader();
                     reader.onload = event => {
                         fileOut.src = event.target.result;
-                        imageurl.value = event.target.result;
                     }
                     reader.readAsDataURL(event.files[0]);
             }

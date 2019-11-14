@@ -65,32 +65,45 @@ app.get("/setup", async (req, res) => {
   });
 });
 
-app.post('/upload', multerUploads, (req, res) => {
+app.get("/upload", async (req, res) => {
+  res.render(__dirname + "/views/upload", {
+    pageTitle: "Upload",
+    model: {}
+  });
+});
+
+app.post('/upload', multerUploads('fileToUpload'), (req, res) => {
   if(req.file) {
-   const file = dataUri(req).content;
-   return uploader.upload(file).then((result) => {
-     const image = result.url;
-     return res.status(200).json({
-       messge: 'Your image has been uploded successfully to cloudinary',
-       data: {
-         image
-       }
-     })
-   }).catch((err) => res.status(400).json({
-     messge: 'someting went wrong while processing your request',
-     data: {
-       err
-     }
-   }))
+    console.log(req.body.message);
+    const file = dataUri(req).content;
+    uploader.upload(file).then((result) => {
+      const image = result.url;
+      console.log({
+        messge: 'Your image has been uploded successfully to cloudinary',
+        data: {
+          image
+        }
+    });
+    // cosole.log('file', file);
+    }).catch((err) => res.status(400).json({
+      messge: 'someting went wrong while processing your request',
+      data: {
+        err
+      }
+    }))
   }
  });
 
-app.post("/setup", async (req, res) => {
+
+app.post("/setup", multerUploads('userimage'), async (req, res) => {
   const userData = firebase.auth().currentUser;
   if (!userData || !userData.uid) {
     res.redirect("/");
   }
-  const profileSlug = serverUtil.slugify(req.body.username);
+  const profileSlug = utils.slugify(req.body.username);
+
+  const file = dataUri(req).content;
+  let image = await utils.uploadSingleImageToCloudinary(file);
 
   await admin.database()
     .ref("users/" + userData.uid)
@@ -98,10 +111,10 @@ app.post("/setup", async (req, res) => {
       username: req.body.username,
       department: {
         title: req.body.department,
-        slug: serverUtil.slugify(req.body.department)
+        slug: utils.slugify(req.body.department)
       },
       jobtitle: req.body.jobtitle,
-      image: req.body.imageurl,
+      image,
       slug: profileSlug
     })
     .catch(error => {
@@ -115,7 +128,7 @@ app.post("/setup", async (req, res) => {
     .ref("departments/" + req.body.department + "/employees/" + userData.uid)
     .set({
       username: req.body.username,
-      image: req.body.imageurl,
+      image,
       jobtitle: req.body.jobtitle,
       slug: profileSlug
     })

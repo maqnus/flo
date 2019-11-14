@@ -4,7 +4,7 @@ import path from 'path';
 
 const storage = multer.memoryStorage();
 
-const multerUploads = multer({ storage }).single('image');
+const multerUploads = fieldName =>  multer({ storage }).single(fieldName);
 
 const dUri = new Datauri();
 
