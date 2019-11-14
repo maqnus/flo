@@ -65,35 +65,6 @@ app.get("/setup", async (req, res) => {
   });
 });
 
-app.get("/upload", async (req, res) => {
-  res.render(__dirname + "/views/upload", {
-    pageTitle: "Upload",
-    model: {}
-  });
-});
-
-app.post('/upload', multerUploads('fileToUpload'), (req, res) => {
-  if(req.file) {
-    console.log(req.body.message);
-    const file = dataUri(req).content;
-    uploader.upload(file).then((result) => {
-      const image = result.url;
-      console.log({
-        messge: 'Your image has been uploded successfully to cloudinary',
-        data: {
-          image
-        }
-    });
-    // cosole.log('file', file);
-    }).catch((err) => res.status(400).json({
-      messge: 'someting went wrong while processing your request',
-      data: {
-        err
-      }
-    }))
-  }
- });
-
 
 app.post("/setup", multerUploads('userimage'), async (req, res) => {
   const userData = firebase.auth().currentUser;
