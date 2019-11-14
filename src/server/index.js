@@ -396,6 +396,23 @@ app.get("/chat", async (req, res) => {
   });
 });
 
+app.get("/settings", async (req, res) => {
+  const userData = firebase.auth().currentUser;
+  if (!userData) {
+    res.redirect("/");
+  }
+
+  const departments = await utils.getDepartments(admin.database());
+
+  res.render(__dirname + "/views/settings", {
+    layoutType: "Settings",
+    pageTitle: "Settings",
+    model: {
+      departments
+    }
+  });
+});
+
 app.get("*", async (req, res) => {
   const userData = firebase.auth().currentUser;
   if (!userData) {
