@@ -1,0 +1,21 @@
+nav(class="main-nav")
+    div(class="container")
+        ul(class="nav-list u-wrapper")
+            if model && model.departments
+                each opt in model.departments
+                    li
+                        a(href=`/department/${opt.slug}` z-index="-1")
+                            span= opt.title
+            li
+                a(href="/mypage") My page
+            li
+                a(href="/chat") Chat
+            li
+                a(href="/settings") Settings
+            li
+                form(action="/logout" method="post")
+                    button(type="submit") Logout
+    button(class="nav-toggler")
+        span(class="visually-hidden") Open navigation
+        img(class="open" src="/assets/nav-list.png" alt="List")
+        img(class="closed" src="/assets/close.png" alt="close")

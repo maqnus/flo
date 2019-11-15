@@ -1,0 +1,54 @@
+extends shared/layout/main.pug
+
+block content
+    include shared/header.pug
+
+    div(class="main")
+        if !model || model.requests.length == 0
+            div
+                img(src="/assets/hourglass.png")
+                h2(class="status-title") No requests from your colleagues
+        if model && model.requests.length > 0
+            each request in model.requests
+                a(class="request-card" href=`/request/${request.rid}`)
+                    div(class="request-card__content")
+                        img(src="/assets/goto.png" alt=`Check out the request from ${request.username}`)
+                        h3= request.username
+                        div(class="request-card__info")
+                            p(class="")= request.project && request.project.name
+                            p(class="") ?
+                                span mins ago
+        //- a(class="request-card" href="/request/2345")
+        //-     div(class="request-card__content")
+        //-         img(src="/assets/goto.png" alt="Check out the request from Eirik")
+        //-         h3 Eirik Fossheim
+        //-         div(class="request-card__info")
+        //-             p(class="") Miljodirektoratet
+        //-             p(class="") 8mins ago
+
+        //- a(class="request-card request-card--non-important" href="/request/2345")
+        //-     div(class="request-card__content")
+        //-         img(src="/assets/goto.png" alt="Check out the request from Eirik")
+        //-         h3 Eirik Fossheim
+        //-         div(class="request-card__info")
+        //-             p(class="") Miljodirektoratet
+        //-             p(class="") 8mins ago
+        
+        //- a(class="request-card request-card--important" href="/request/2345")
+        //-     div(class="request-card__content")
+        //-         img(src="/assets/goto.png" alt="Check out the request from Eirik")
+        //-         h3 Eirik Fossheim
+        //-         div(class="request-card__info")
+        //-             p(class="") Miljodirektoratet
+        //-             p(class="") 8mins ago
+        
+        //- a(class="request-card request-card--joy" href="/request/2345")
+        //-     div(class="request-card__content")
+        //-         img(src="/assets/goto.png" alt="Check out the request from Eirik")
+        //-         h3 Eirik Fossheim
+        //-         div(class="request-card__info")
+        //-             p(class="") Miljodirektoratet
+        //-             p(class="") 8mins ago
+
+block footerScripts    
+    script(src="/js/main.js")

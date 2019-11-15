@@ -1,0 +1,5 @@
+picture(class="profile-image-wrapper")
+    img(
+        src= model.user && model.user.image || '/assets/ralph-wave.gif'
+        alt= model.user && model.user.alt || 'Profile image'
+    )

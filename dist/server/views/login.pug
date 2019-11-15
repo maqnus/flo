@@ -1,0 +1,35 @@
+extends shared/layout/plane.pug
+
+block splash
+    div(id="splash")
+        div
+            img(src="/assets/logo.png" alt="Profile image")
+block content
+    div(class="background-animation")
+        div(class="inner-container")
+            div(class="shape")
+
+    header(class="header")
+        h1(class="visually-hidden") Login
+    div(class="main")
+        form(class="narrow-wrapper" id="loginform" action="login" method="post")
+            div(class="input-wrapper")
+                input(type="email" name="email" id="email" required)
+                label(for="email") Email
+            div(class="input-wrapper")
+                input(type="password" name="password" id="usrpwd" required)
+                label(for="password") Password
+            
+            div(class="narrow-wrapper")
+                a(class="forgot-password" href="/reset-password") Forgot password?
+                a(class="new-user" href="/register") New user
+
+            button(type="submit")
+                img(src="/assets/checkmark.png" alt="Login")
+block footerScripts
+    script(src="/js/main.js")
+    script.
+        const splash = document.getElementById("splash");
+        splash.addEventListener("animationend", function() {
+            splash.parentNode.removeChild(splash);
+        }, false);

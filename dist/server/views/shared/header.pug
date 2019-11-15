@@ -1,0 +1,5 @@
+header(class="header")
+    div
+        include profile-image.pug
+        h1(class="profile__name")= model.user && model.user.username
+        p(class="profile__title")= model.user && model.user.jobtitle

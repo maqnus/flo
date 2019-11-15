@@ -1,0 +1,56 @@
+extends shared/layout/main.pug
+block content
+    - var title = 'Chat'
+    include shared/header.pug
+    div(class="main")
+        div Select your favorite color:
+            input(id="favcolor" type="color" name="favcolor" value="#ff0000")
+        div(class="chat-wrapper")
+            ul(id="messages")
+            form(action="" id="form")
+                input(id="m" autocomplete="off")
+                button Send
+block footerScripts
+    script(src="/js/main.js")
+    script(src="/socket.io/socket.io.js")
+    script.
+        const socket = io();
+        socket.emit('userShouldBeLoggedInHere',{});
+        socket.on('redirect', destination => window.location.href = destination);
+        socket.on('chat message', props => {
+          const {
+            text
+          } = props;
+            console.log('chat message', props);
+            const li = document.createElement('li');
+            const p = document.createElement('p');
+            p.setAttribute("style", "background-color:" + props.color);
+            const message = document.createTextNode(text);
+            p.appendChild(message);
+            li.appendChild(p);
+            messages.appendChild(li);
+        });
+
+        const form = document.getElementById('form');
+        const messageInput = document.getElementById('m');
+        const messages = document.getElementById('messages');
+        const favcolorInput = document.getElementById('favcolor');
+        const postMessage = event => {
+            event.preventDefault();
+            console.log('trying to chat');
+            socket.emit('chat message', {
+              text: messageInput.value,
+              color: favcolorInput.value
+            });
+            messageInput.value = "";
+            return false;
+        };
+        const setFavcolor = event => {
+          event.preventDefault();
+          console.log(event);
+          socket
+          return false;
+        }
+        form.addEventListener('submit', postMessage);
+        
+    

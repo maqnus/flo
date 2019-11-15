@@ -4,7 +4,10 @@
     "scripts": {
         "serve": "nodemon --require @babel/register src/server/index.js",
         "build": "webpack --require @babel/register --config src/server/config/webpack.config.js",
-        "watch": "webpack --require @babel/register --config src/server/config/webpack.config.js --watch"
+        "watch": "webpack --require @babel/register --config src/server/config/webpack.config.js --watch",
+        "clear": "rm -rf dist",
+        "copyToCompiled": "cp -fr src/server/config/*.json dist/server/config && cp -fr src/server/views dist/server",
+        "build:server": "npm run clear && babel src/ -d dist/ && npm run copyToCompiled"
     },
     "description": "A connectivity app",
     "dependencies": {

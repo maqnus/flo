@@ -1,0 +1,19 @@
+extends shared/layout/main.pug
+
+block content
+    include shared/header.pug
+    div(class="main")
+        div(class="info-card")
+            div(class="info-card__part info-card__part--icon-wrapper")
+                img(src="/assets/hourglass--very-busy.png" alt="The user is currently very busy")
+            div(class="info-card__part  info-card__part--content-wrapper")
+                p(class="info__status") Very Busy
+                p(class="info__kundenavn") Miljødirektoratet
+                p(class="info__time") Avalible in
+                    span 13min
+        a(href=`/create-request/${model.user && model.user.slug}`)
+            span +
+            span(class="visually-hidden") Trekk en kølapp 
+
+block footerScripts
+    script(src="/js/main.js")

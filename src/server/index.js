@@ -4,7 +4,7 @@ import "regenerator-runtime/runtime";
 import express from "express";
 
 import { urlencoded, json } from 'body-parser';
-import { uploader, cloudinaryConfig } from './config/cloudinaryConfig';
+import { cloudinaryConfig } from './config/cloudinaryConfig';
 import { multerUploads, dataUri } from './middlewares/multerUpload';
 
 import firebase from 'firebase';

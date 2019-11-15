@@ -1,3 +1,5 @@
+import { uploader } from './config/cloudinaryConfig';
+
 export const slugify = string => {
     const a =
       "àáâäæãåāăąçćčđďèéêëēėęěğǵḧîïíīįìłḿñńǹňôöòóœøōõṕŕřßśšşșťțûüùúūǘůűųẃẍÿýžźż·/_,:;";
@@ -96,23 +98,3 @@ export const getProjects = async (db) => await db
 
 
  export const uploadSingleImageToCloudinary = file => new Promise(async resolve => uploader.upload(file).then((result) => resolve(result.url)));
-
-  // let image = '';
-  // if(req.file) {
-  //   const file = dataUri(req).content;
-  //   await uploader.upload(file).then((result) => {
-  //     image = result.url;
-  //     console.log({
-  //       messge: 'Your image has been uploded successfully to cloudinary',
-  //       data: {
-  //         image
-  //       }
-  //   });
-  //   // cosole.log('file', file);
-  //   }).catch((err) => res.status(400).json({
-  //     messge: 'someting went wrong while processing your request',
-  //     data: {
-  //       err
-  //     }
-  //   }))
-  // }

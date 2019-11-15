@@ -1,0 +1,18 @@
+extends shared/layout/main.pug
+
+block content
+    div(class="main")
+        div(class="narrow-wrapper")
+            h2 Create request
+            form(action="/create-request" method="post")
+                div
+                    label(for="project-select") Choose a project:
+                    select(name="project" id="project-select" required)
+                        option(value="" disabled hidden selected) --Please choose an option--
+                        each opt, index in model.projects
+                            option(value=index)= opt.name
+                label Add a message
+                    input(type="text" name="message")
+                label(class="visually-hidden")
+                    input(type="text" name="to" value=`${model.toSlug}`)
+                button(type="submit") submit
