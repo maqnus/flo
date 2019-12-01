@@ -6,3 +6,43 @@ block content
             h1 Settings
     div(class="main")
         p This is where you do changes to your profile
+        div
+            h2 Change profile info
+            form(id="loginform" action="setup" method="post" enctype="multipart/form-data")
+                label
+                    span(class="visually-hidden") Profile picture
+                    picture(class="profile-image-wrapper")
+                        img(id='imgOut' src='/assets/ralph-wave.gif' alt='')
+                    <input type="file" accept="image/*" id="imgInp" class="visually-hidden">
+                div
+                    label(for="department") Choose department:
+                    select(name="department" id="department" required)
+                        option(value="" disabled hidden selected) --Please choose an option--
+                        each opt, index in model.departments
+                            option(value=index)= opt.title
+
+                label Jobtitle
+                    input(type="text" name="jobtitle" id="jobtitle" required)
+                button(onclick="update()") Done
+
+block footerScripts
+    script.
+        const fileIn = document.getElementById('imgInp'),
+              fileOut = document.getElementById('imgOut');
+
+        var readUrl = event => {
+            if(event.files && event.files[0]) {
+                let reader = new FileReader();
+                    reader.onload = event => fileOut.src = event.target.result;
+                    reader.readAsDataURL(event.files[0])
+            }
+        }
+
+        fileIn.onchange = function() {
+            readUrl(this);
+        };
+
+        const update = () => {
+            console.log('oppdatering');
+            sendData('/settings', { fileIn }).then('it worked');
+        }
